@@ -1,0 +1,124 @@
+/* =========================================================================
+   GLOBAL MODERN UI REVAMP
+   ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif !important;
+    background-color: #f7f9fc !important;
+}
+
+/* CARDS */
+.card {
+    border: none !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
+    transition: all 0.3s ease;
+}
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+}
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+}
+
+/* BUTTONS */
+.btn {
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.btn-primary {
+    background-color: #f4af1a !important;
+    border-color: #f4af1a !important;
+    color: #fff !important;
+}
+.btn-primary:hover {
+    background-color: #e5a013 !important;
+    border-color: #e5a013 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(244, 175, 26, 0.3) !important;
+}
+
+/* BADGES */
+.badge {
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+/* TABLES */
+.table {
+    display: table;
+}
+.table th {
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #6e829f !important;
+    border-top: none !important;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(244, 175, 26, 0.04) !important;
+}
+
+/* FORM CONTROLS */
+.form-control {
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s;
+}
+.form-control:focus {
+    border-color: #f4af1a !important;
+    box-shadow: 0 0 0 3px rgba(244, 175, 26, 0.15) !important;
+}
+
+/* SELECT2 PRESETS */
+.select2-container--default .select2-selection--single {
+    border-radius: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    height: 42px !important;
+    padding: 5px !important;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 40px !important;
+}
+
+/* EXISTING SPECIFICS */
+.login-row{ margin-left: unset; margin-right: unset; }
+.login-error{ text-align: left; }
+.forget-password{ float: right; }
+.remember-password{ float: left; }
+
+.dz-size strong, .dz-filename { color: #5c6e80; }
+.pdf-container { position: relative; width: 100%; padding-top: 100%; }
+.pdf { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.doc-img{ width: 100%; }
+.input-card, .embed-card, .tab-card, .att-body { overflow: auto; max-height: 1200px; }
+
+.aalogo{ width: 120px; height: auto; margin-bottom: 1rem; }
+.aacolor{ background-color: #f4af1a; border-color: #f4af1a; color: white; }
+.aacolor:hover, .aacolor.active, .aacolor.focus { background-color: #e5a013; border-color: #e5a013; }
+.aa-color{ color: #f4af1a !important; }
+a:hover { color: #e5a013; text-decoration: none; }
+
+.fe{ vertical-align: middle; }
+.logo-side{ width: 40px; margin-bottom: 0; }
+.dropdown-item.active{ background-color: #f4af1a; color: white !important; }
+.att-table{ min-width: 500px; }
+.side-select{
+    color: #f4ae1a!important;
+    border-radius: 8px;
+    background-color: rgba(244, 175, 26, 0.1);
+}
+#textareaContainer { display: none; }
+.bu-card-head{ padding-left: 0; font-size: .9rem; }
+.bu-card-head strong{ display: inline-flex; }
+.ayat-text{ color:#f4ae1a; display: block; }
+.main-report{ overflow: hidden; padding: 1.2rem; min-height: 100vh; transition: all .3s ease-in-out; }
