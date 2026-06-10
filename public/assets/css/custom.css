@@ -134,7 +134,7 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 }
 .topnav .dropdown-item:hover { background-color: var(--cds-shell-hover); color: #fff; }
 .topnav .dropdown-item.active,
-.topnav .dropdown-item:active { background-color: var(--cds-interactive); color: #161616; }
+.topnav .dropdown-item:active { background-color: var(--cds-interactive); color: #ffffff; }
 
 /* =========================================================================
    UI SHELL — SIDEBAR
@@ -202,6 +202,7 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
   align-items: center;
   transition: background-color 0.1s, color 0.1s, border-color 0.1s;
 }
+.sidebar-left .nav-item .nav-link:active { color: #ffffff !important; }
 .sidebar-left .nav-item .nav-link:hover {
   background-color: var(--cds-shell-hover) !important;
   color: #ffffff !important;
@@ -410,14 +411,15 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
   box-shadow: none !important;
   transform: none !important;
 }
-.btn-primary:active { background-color: var(--cds-interactive-active) !important; }
+.btn-primary:active { background-color: var(--cds-interactive-active) !important; color: #ffffff !important; }
 
 .btn-secondary {
   background-color: #393939 !important;
   border-color: #393939 !important;
   color: #f4f4f4 !important;
 }
-.btn-secondary:hover { background-color: #4c4c4c !important; border-color: #4c4c4c !important; }
+.btn-secondary:hover  { background-color: #4c4c4c !important; border-color: #4c4c4c !important; }
+.btn-secondary:active { background-color: #161616 !important; border-color: #161616 !important; color: #f4f4f4 !important; }
 
 .btn-outline-secondary {
   background-color: transparent !important;
