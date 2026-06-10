@@ -27,40 +27,56 @@
                         <ul class="mb-0">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
                     </div>
                 @endif
-                <form action="{{ route('ass.resources.upload') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('ass.resources.upload') }}" method="POST" enctype="multipart/form-data" id="assUploadForm">
                     @csrf
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label><strong>Name</strong></label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="form-control" placeholder="Resource name" required>
+                            <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" placeholder="Resource name" required>
+                            @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3 form-group">
                             <label><strong>Category</strong></label>
-                            <select name="category" class="form-control" required>
+                            <select name="category" class="form-control @error('category') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
-                                <option value="Tax" {{ old('category') === 'Tax' ? 'selected' : '' }}>Tax</option>
-                                <option value="Audit" {{ old('category') === 'Audit' ? 'selected' : '' }}>Audit</option>
-                                <option value="Advisory" {{ old('category') === 'Advisory' ? 'selected' : '' }}>Advisory</option>
-                                <option value="Corporate" {{ old('category') === 'Corporate' ? 'selected' : '' }}>Corporate</option>
+                                @foreach(['Tax','Audit','Advisory','Corporate'] as $cat)
+                                    <option value="{{ $cat }}" {{ old('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                                @endforeach
                             </select>
+                            @error('category')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-5 form-group">
                             <label><strong>Description</strong> <small class="text-muted">(optional)</small></label>
                             <input type="text" name="description" value="{{ old('description') }}" class="form-control" placeholder="Brief description">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label><strong>File</strong></label>
-                            <input type="file" name="file" class="form-control-file" required>
-                            <small class="text-muted">Max 20MB. Any file type.</small>
+
+                    <div class="form-group mb-3">
+                        <label><strong>File</strong></label>
+                        <div id="assDropZone" onclick="document.getElementById('assFileInput').click()"
+                             style="border:2px dashed #ced4da;border-radius:10px;padding:30px 24px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;">
+                            <div id="assDropIcon" style="font-size:2.2rem;margin-bottom:8px;color:#adb5bd;">
+                                <i class="fe fe-upload-cloud"></i>
+                            </div>
+                            <div id="assDropLabel" style="font-weight:600;color:#495057;margin-bottom:4px;">
+                                Click or drag &amp; drop a file here
+                            </div>
+                            <div style="font-size:12px;color:#adb5bd;">Any file type &nbsp;•&nbsp; Max 20 MB</div>
+                            <div id="assFileInfo" style="display:none;margin-top:12px;">
+                                <span style="display:inline-flex;align-items:center;gap:8px;background:#e8f4fd;border:1px solid #bee3f8;border-radius:20px;padding:6px 14px;font-size:13px;color:#2d6a9f;font-weight:600;">
+                                    <i class="fe fe-file fe-12"></i>
+                                    <span id="assFileName"></span>
+                                    <span id="assFileSize" style="font-weight:400;color:#6c9ec9;"></span>
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-md-6 d-flex align-items-end form-group">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fe fe-send fe-14 mr-1"></i> Submit for Approval
-                            </button>
-                        </div>
+                        <input type="file" id="assFileInput" name="file" style="display:none" class="@error('file') is-invalid @enderror" required>
+                        @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                     </div>
+
+                    <button type="submit" id="assSubmitBtn" class="btn btn-primary">
+                        <i class="fe fe-send fe-14 mr-1"></i> Submit for Approval
+                    </button>
                 </form>
             </div>
         </div>
@@ -163,4 +179,57 @@
     @endif
 
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    var dropZone  = document.getElementById('assDropZone');
+    var fileInput = document.getElementById('assFileInput');
+    var fileInfo  = document.getElementById('assFileInfo');
+    var fileName  = document.getElementById('assFileName');
+    var fileSize  = document.getElementById('assFileSize');
+    var dropLabel = document.getElementById('assDropLabel');
+    var dropIcon  = document.getElementById('assDropIcon');
+
+    if (dropZone) {
+        function formatBytes(b) {
+            if (b < 1024) return b + ' B';
+            if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+            return (b/1048576).toFixed(1) + ' MB';
+        }
+        function showFile(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = '(' + formatBytes(file.size) + ')';
+            fileInfo.style.display = 'block';
+            dropLabel.textContent  = 'File selected';
+            dropIcon.innerHTML = '<i class="fe fe-check-circle" style="color:#28a745;"></i>';
+            dropZone.style.borderColor = '#28a745';
+            dropZone.style.background  = '#f0fff4';
+        }
+        fileInput.addEventListener('change', function() {
+            if (this.files[0]) showFile(this.files[0]);
+        });
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#4dabf7';
+            this.style.background  = '#e8f4fd';
+        });
+        dropZone.addEventListener('dragleave', function() {
+            this.style.borderColor = '#ced4da';
+            this.style.background  = '#fafafa';
+        });
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#ced4da';
+            this.style.background  = '#fafafa';
+            var file = e.dataTransfer.files[0];
+            if (file) {
+                var dt = new DataTransfer();
+                dt.items.add(file);
+                fileInput.files = dt.files;
+                showFile(file);
+            }
+        });
+    }
+</script>
 @endsection

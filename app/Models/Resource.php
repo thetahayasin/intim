@@ -18,4 +18,9 @@ class Resource extends Model
         'uploaded_by',
         'status',
     ];
+
+    public function uploader()
+    {
+        return $this->belongsTo(\App\Models\Associate::class, 'uploaded_by');
+    }
 }

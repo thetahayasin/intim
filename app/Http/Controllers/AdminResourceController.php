@@ -12,7 +12,7 @@ class AdminResourceController extends Controller
     {
         $resources = Resource::where('status', 'approved')
             ->orderBy('category')->orderBy('name')->get()->groupBy('category');
-        $pending = Resource::where('status', 'pending')->orderByDesc('created_at')->get();
+        $pending = Resource::with('uploader')->where('status', 'pending')->orderByDesc('created_at')->get();
         return view('admin.resources.index', compact('resources', 'pending'));
     }
 

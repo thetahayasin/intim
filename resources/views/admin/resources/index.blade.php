@@ -22,6 +22,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Category</th>
+                        <th>Uploaded By</th>
                         <th>File</th>
                         <th>Submitted</th>
                         <th>Actions</th>
@@ -35,6 +36,7 @@
                             @if($res->description)<br><small class="text-muted">{{ $res->description }}</small>@endif
                         </td>
                         <td><span class="badge badge-secondary">{{ $res->category }}</span></td>
+                        <td><strong>{{ $res->uploader?->name ?? '—' }}</strong></td>
                         <td><small class="text-muted">{{ $res->original_filename }}</small></td>
                         <td><small>{{ $res->created_at->format('d M Y') }}</small></td>
                         <td class="text-nowrap">
