@@ -165,4 +165,21 @@ class AssociateLeaveController extends Controller
 
         return redirect()->route('ass.leave')->with('success', 'Leave Cancelled');
     }
+
+    public function cancelBulk(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (empty($ids)) {
+            return redirect()->route('ass.leave')->with('error', 'No leaves selected.');
+        }
+
+        $associateId = Auth::guard('associate')->user()->id;
+
+        $count = Attendance::whereIn('id', $ids)
+            ->where('associate_id', $associateId)
+            ->where('leave_approval', 0)
+            ->update(['is_leave' => 0]);
+
+        return redirect()->route('ass.leave')->with('success', $count . ' leave(s) cancelled.');
+    }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -65,7 +63,7 @@ foreach ($associates as $associate) {
                 ];
 
                 if (count($inserts) >= $batchSize) {
-                    DB::table('attendances')->insert($inserts);
+                    DB::table('attendances')->insertOrIgnore($inserts);
                     $inserts = [];
                 }
             }
@@ -75,7 +73,7 @@ foreach ($associates as $associate) {
 }
 
 if (!empty($inserts)) {
-    DB::table('attendances')->insert($inserts);
+    DB::table('attendances')->insertOrIgnore($inserts);
 }
 
 // Step 6: Get all associates
@@ -131,7 +129,7 @@ return view('admin.progress', ['records' => $attendanceData]);
 
 
 
-public function breakup($id)
+public function breakup(int $id)
 {
     $currentDate = now()->toDateString();
 
@@ -178,7 +176,7 @@ public function breakup($id)
     return view('admin.breakup', compact('records', 'associate'));
 }
 
-public function monthDetails($id, $year, $month)
+public function monthDetails(int $id, int $year, int $month)
 {
     $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
     $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();

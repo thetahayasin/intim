@@ -47,7 +47,8 @@
                         </div>
 
                         <hr>
-                        <input type="submit" value="Update" class="btn btn-primary btn-lg float-right">
+                        @include('components.message')
+                        <button type="submit" class="btn btn-secondary btn-lg float-right">Update</button>
                     </form>
                 </div>
             </div>

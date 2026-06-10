@@ -6,6 +6,7 @@ use App\Models\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class AssociateResourceController extends Controller
 {
@@ -25,7 +26,9 @@ class AssociateResourceController extends Controller
     {
         $resource = Resource::where('status', 'approved')->findOrFail($id);
         $path = Storage::disk('public')->path($resource->file_path);
-        return response()->download($path, $resource->original_filename);
+        $ext = pathinfo($resource->original_filename, PATHINFO_EXTENSION);
+        $filename = Str::slug($resource->name) . ($ext ? '.' . $ext : '');
+        return response()->download($path, $filename);
     }
 
     public function upload(Request $request)

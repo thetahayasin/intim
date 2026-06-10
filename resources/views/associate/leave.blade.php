@@ -10,30 +10,46 @@
 
 <div class="col-md-12 container-fluid">
 
-    {{-- Summary Stats Row --}}
-    <div class="row my-3">
+    {{-- Summary Stats --}}
+    <div class="row my-4">
         <div class="col-6 col-md-3 mb-2">
-            <div class="card shadow text-center py-3">
-                <small class="text-muted">Total Applied</small>
-                <h4 class="mb-0">{{ $pendingLeaves->count() + $history->count() }}</h4>
+            <div class="card">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted d-block mb-1">Total Applied</small>
+                    <div style="font-size:1.6rem; font-weight:700; color:var(--cds-text-primary);">
+                        {{ $pendingLeaves->count() + $history->count() }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-6 col-md-3 mb-2">
-            <div class="card shadow text-center py-3">
-                <small class="text-muted">Pending</small>
-                <h4 class="mb-0" style="color: #e67e22;">{{ $pendingLeaves->count() }}</h4>
+            <div class="card">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted d-block mb-1">Pending</small>
+                    <div style="font-size:1.6rem; font-weight:700; color:var(--cds-text-primary);">
+                        {{ $pendingLeaves->count() }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-6 col-md-3 mb-2">
-            <div class="card shadow text-center py-3">
-                <small class="text-muted">Approved</small>
-                <h4 class="mb-0" style="color: #27ae60;">{{ $history->where('leave_approval', 1)->count() }}</h4>
+            <div class="card">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted d-block mb-1">Approved</small>
+                    <div style="font-size:1.6rem; font-weight:700; color:var(--cds-text-primary);">
+                        {{ $history->where('leave_approval', 1)->count() }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-6 col-md-3 mb-2">
-            <div class="card shadow text-center py-3">
-                <small class="text-muted">Rejected</small>
-                <h4 class="mb-0" style="color: #e74c3c;">{{ $history->where('leave_approval', 0)->count() }}</h4>
+            <div class="card">
+                <div class="card-body text-center py-3">
+                    <small class="text-muted d-block mb-1">Rejected</small>
+                    <div style="font-size:1.6rem; font-weight:700; color:var(--cds-text-secondary);">
+                        {{ $history->where('leave_approval', 0)->count() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -41,55 +57,62 @@
     <div class="row">
         {{-- Leave Application Form --}}
         <div class="col-md-8 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">Leave Application</h5>
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title"><i class="fe fe-file-text fe-16 mr-1"></i> Leave Application</strong>
+                </div>
+                <div class="card-body">
                     @include('components.message')
                     @foreach ($errors->all() as $error)
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <span class="fe fe-minus-circle fe-16 mr-2"></span> {{ $error }}
+                            <i class="fe fe-alert-circle fe-16 mr-2"></i> {{ $error }}
                         </div>
                     @endforeach
+
                     <form method="POST" action="{{ route('ass.leave.store') }}">
                         @csrf
-                        <div class="form-group">
-                            <label for="leselect">Reason:</label>
+                        <div class="form-group mb-3">
+                            <label>Reason</label>
                             <select id="leselect" class="form-control" onchange="showHideTextarea()">
-                                <option disabled selected>Select Reason</option>
+                                <option disabled selected>Select reason</option>
                                 <option value="Sick Leave">Sick Leave</option>
                                 <option value="Exam Leave">Exam Leave</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
-                        <br>
-                        <label for="daterange">Dates (mm/dd/yyyy):</label>
-                        <input id="daterange" class="form-control" type="text" name="daterange" />
-                        <br>
-                        <textarea max="255" id="reason" class="form-control" rows="6"
-                            style="display: none;" name="reason"
-                            placeholder="Elaborate the Reason for Leave"></textarea>
-                        <br>
-                        <input type="submit" value="Submit" class="btn btn-primary btn-lg float-right">
+                        <div class="form-group mb-3">
+                            <label>Date Range <small class="text-muted">(mm/dd/yyyy)</small></label>
+                            <input id="daterange" class="form-control" type="text" name="daterange" autocomplete="off" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <textarea id="reason" class="form-control" rows="4" style="display:none;" name="reason"
+                                placeholder="Elaborate the reason for leave"></textarea>
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-secondary btn-lg">Submit</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
 
         {{-- Instructions --}}
-        <div class="col-md-4 col-lg-4 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">Instructions</h5>
-                    <ul>
-                        <li>Do not write very long explanations in the reason field. A simple to the point word is enough.</li>
-                        <li>If a date is marked as present, it cannot be applied for leave.</li>
-                        <li>Leaves are subjected to admin's approval.</li>
+        <div class="col-md-4 my-4">
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title"><i class="fe fe-info fe-16 mr-1"></i> Instructions</strong>
+                </div>
+                <div class="card-body">
+                    <ul style="padding-left:1.25rem; font-size:14px; color:var(--cds-text-secondary);">
+                        <li class="mb-2">Keep the reason brief and to the point.</li>
+                        <li class="mb-2">If a date is marked as present, it cannot be applied for leave.</li>
+                        <li class="mb-2">Leaves are subject to admin approval.</li>
                     </ul>
                     <hr>
-                    <div class="ayat text-center">
+                    <div class="text-center" style="padding-top:8px;">
                         <span class="ayat-text"><b>"there is no religion for one who cannot uphold a covenant"</b></span>
                         <br>
-                        <span class="ref-text"><i>Musnad Aḥmad - H12383</i></span>
+                        <span class="text-muted mt-2 d-block"><i>Musnad Aḥmad — H12383</i></span>
                     </div>
                 </div>
             </div>
@@ -98,40 +121,59 @@
 
     <div class="row">
         {{-- Pending Leaves --}}
-        <div class="col-md-6 col-lg-6 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">
-                        Pending Leaves
-                        <span style="display: inline-block; background-color: #ffc107; color: #000; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; vertical-align: middle;">
-                            {{ $pendingLeaves->count() }}
-                        </span>
-                    </h5>
-                    <table class="table table-hover att-table">
+        <div class="col-md-6 my-4">
+            {{-- Bulk cancel form (inputs associated via form="..." attribute) --}}
+            <form id="bulkCancelForm" action="{{ route('ass.leave.cancel.bulk') }}" method="POST">
+                @csrf
+            </form>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong class="card-title mb-0">
+                        <i class="fe fe-clock fe-16 mr-1"></i> Pending Leaves
+                    </strong>
+                    <div class="d-flex align-items-center" style="gap:8px;">
+                        <button id="bulkCancelBtn" type="submit" form="bulkCancelForm"
+                                class="btn btn-sm btn-secondary" style="display:none;">
+                            <i class="fe fe-x fe-12 mr-1"></i> Cancel Selected
+                            (<span id="selectedCount">0</span>)
+                        </button>
+                        <span class="cds-count-tag">{{ $pendingLeaves->count() }}</span>
+                    </div>
+                </div>
+                <div class="cds-table-wrap">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
+                                <th style="width:36px;">
+                                    <input type="checkbox" id="selectAllLeaves">
+                                </th>
                                 <th>Date</th>
                                 <th>Reason</th>
-                                <th>Action</th>
+                                <th class="text-center">Cancel</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($pendingLeaves as $l)
                                 <tr>
-                                    <td>{{ date('M d, Y | (D)', strtotime($l->date)) }}</td>
-                                    <td>{{ $l->reason_for_leave }}</td>
                                     <td>
+                                        <input type="checkbox" name="ids[]" value="{{ $l->id }}"
+                                               form="bulkCancelForm" class="leave-checkbox">
+                                    </td>
+                                    <td>{{ date('d M Y (D)', strtotime($l->date)) }}</td>
+                                    <td>{{ $l->reason_for_leave }}</td>
+                                    <td class="text-center">
                                         <form action="{{ route('ass.leave.cancel', $l->id) }}" method="post">
                                             @csrf
-                                            <button class="btn btn-primary" type="submit">
-                                                <i class="fe fe-x fe-16"></i>
+                                            <button class="btn btn-secondary btn-sm" type="submit">
+                                                <i class="fe fe-x fe-12"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted">No pending leaves</td>
+                                    <td colspan="4" class="text-center text-muted py-3">No pending leaves</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -141,39 +183,39 @@
         </div>
 
         {{-- History --}}
-        <div class="col-md-6 col-lg-6 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">
-                        History
-                        <span style="display: inline-block; background-color: #6c757d; color: #fff; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; vertical-align: middle;">
-                            {{ $history->count() }}
-                        </span>
-                    </h5>
-                    <table class="table table-hover att-table">
+        <div class="col-md-6 my-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong class="card-title mb-0">
+                        <i class="fe fe-list fe-16 mr-1"></i> History
+                    </strong>
+                    <span class="cds-count-tag">{{ $history->count() }}</span>
+                </div>
+                <div class="cds-table-wrap">
+                    <table class="table table-hover mb-0">
                         <thead>
                             <tr>
                                 <th>Date</th>
                                 <th>Reason</th>
-                                <th>Status</th>
+                                <th class="text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($history as $l)
                                 <tr>
-                                    <td>{{ date('M d, Y | (D)', strtotime($l->date)) }}</td>
+                                    <td>{{ date('d M Y (D)', strtotime($l->date)) }}</td>
                                     <td>{{ $l->reason_for_leave }}</td>
-                                    <td>
+                                    <td class="text-center">
                                         @if($l->leave_approval == 1)
-                                            <span class="badge badge-success">Approved</span>
+                                            <span class="cds-status-tag cds-status-tag--done">Approved</span>
                                         @else
-                                            <span class="badge badge-danger">Rejected</span>
+                                            <span class="cds-status-tag">Rejected</span>
                                         @endif
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted">No history yet</td>
+                                    <td colspan="3" class="text-center text-muted py-3">No history yet</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -190,41 +232,69 @@
 @section('scripts')
 <script>
 function showHideTextarea() {
-    var selectBox = document.getElementById("leselect");
-    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-    var textarea = document.getElementById("reason");
+    var sel = document.getElementById('leselect');
+    var val = sel.options[sel.selectedIndex].value;
+    var ta  = document.getElementById('reason');
+    ta.style.display = (val === 'Other') ? 'block' : 'none';
+    ta.value = (val === 'Sick Leave' || val === 'Exam Leave') ? val : '';
+}
 
-    if (selectedValue === "Other") {
-        textarea.style.display = "block";
+function updateBulkUI() {
+    var checked = document.querySelectorAll('.leave-checkbox:checked');
+    var btn = document.getElementById('bulkCancelBtn');
+    var count = document.getElementById('selectedCount');
+    if (!btn) return;
+    if (checked.length > 0) {
+        btn.style.display = 'inline-flex';
+        count.textContent = checked.length;
     } else {
-        textarea.style.display = "none";
-    }
-
-    if (selectedValue === "Sick Leave" || selectedValue === "Exam Leave") {
-        textarea.value = selectedValue;
-    } else {
-        textarea.value = "";
+        btn.style.display = 'none';
     }
 }
+
+document.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'selectAllLeaves') {
+        document.querySelectorAll('.leave-checkbox').forEach(function(cb) {
+            cb.checked = e.target.checked;
+        });
+        updateBulkUI();
+    }
+    if (e.target && e.target.classList.contains('leave-checkbox')) {
+        var all = document.querySelectorAll('.leave-checkbox');
+        var checked = document.querySelectorAll('.leave-checkbox:checked');
+        var selectAll = document.getElementById('selectAllLeaves');
+        if (selectAll) selectAll.checked = all.length === checked.length;
+        updateBulkUI();
+    }
+});
 </script>
 <script src="{{ asset('assets/js/daterangepicker.js') }}"></script>
+<script id="leaveDataJson" type="application/json">{!! json_encode(['leaveDates' => $leaveDates, 'holidays' => $publicHolidays]) !!}</script>
 <script>
-$(function() {
-    var leaveDates = {!! json_encode($leaveDates) !!};
-    var publicHolidays = {!! json_encode($publicHolidays) !!};
+function initLeaveDaterange() {
+    if (!document.getElementById('daterange')) return;
+    var dataEl = document.getElementById('leaveDataJson');
+    if (!dataEl || typeof $ === 'undefined' || !$.fn.daterangepicker) { setTimeout(initLeaveDaterange, 80); return; }
+
+    var data = JSON.parse(dataEl.textContent);
+    if ($('#daterange').data('daterangepicker')) $('#daterange').data('daterangepicker').remove();
 
     $('#daterange').daterangepicker({
         opens: 'left',
         singleDatePicker: false,
         isInvalidDate: function(date) {
-            var formattedDate = date.format('MM/DD/YYYY');
+            var d = date.format('MM/DD/YYYY');
             if (date.day() === 0 || date.day() === 6) return true;
             if (date.isBefore(moment(), 'day')) return true;
-            if (leaveDates.includes(formattedDate)) return true;
-            if (publicHolidays.includes(formattedDate)) return true;
+            if (data.leaveDates.includes(d)) return true;
+            if (data.holidays.includes(d)) return true;
             return false;
         }
     });
-});
+}
+
+document.removeEventListener('livewire:navigated', initLeaveDaterange);
+document.addEventListener('livewire:navigated', initLeaveDaterange);
+initLeaveDaterange();
 </script>
 @endsection

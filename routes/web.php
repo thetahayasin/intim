@@ -15,6 +15,7 @@ use App\Http\Controllers\AdminLeaveController;
 use App\Http\Controllers\AdminAssociateController;
 use App\Http\Controllers\AdminProgressController;
 use App\Http\Controllers\AdminPassController;
+use App\Http\Controllers\AdminSettingsController;
 //bill
 use App\Http\Controllers\AdminClientController;
 use App\Http\Controllers\AdminBillingController;
@@ -90,8 +91,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/e/progress', [AdminProgressController::class, 'index'])->name('e.progress');
     Route::get('/e/progress/breakup/{id}', [AdminProgressController::class, 'breakup'])->name('e.progress.breakup');
     
-    //password
-    Route::get('/e/password/change', [AdminPassController::class, 'index'])->name('e.password');
+    //settings
+    Route::get('/e/settings', [AdminSettingsController::class, 'index'])->name('e.settings');
+    Route::post('/e/settings/password', [AdminSettingsController::class, 'updatePassword'])->name('e.settings.password');
+    Route::post('/e/settings/smtp', [AdminSettingsController::class, 'updateSmtp'])->name('e.settings.smtp');
+    Route::post('/e/settings/branding', [AdminSettingsController::class, 'updateBranding'])->name('e.settings.branding');
+    // Legacy redirect
+    Route::get('/e/password/change', fn() => redirect()->route('e.settings'))->name('e.password');
     Route::post('/e/password/update', [AdminPassController::class, 'update'])->name('e.password.update');
 
 
@@ -203,6 +209,7 @@ Route::middleware(['auth.associate'])->group(function () {
     Route::get('/a/leave', [AssociateLeaveController::class, 'index'])->name('ass.leave');
     Route::post('/a/leave/store', [AssociateLeaveController::class, 'store'])->name('ass.leave.store');
     Route::post('/a/leave/cancel/{id}', [AssociateLeaveController::class, 'cancel'])->name('ass.leave.cancel');
+    Route::post('/a/leave/cancel-bulk', [AssociateLeaveController::class, 'cancelBulk'])->name('ass.leave.cancel.bulk');
 
 
     //progress

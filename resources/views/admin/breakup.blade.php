@@ -5,18 +5,24 @@
 @section('content')
 
 <div class="col-md-12 container-fluid">
-<a wire:navigate href="{{ route('e.progress') }}" class="btn btn-secondary"><i class="fe fe-arrow-left fe-16"></i> Back</a> 
+    <a wire:navigate href="{{ route('e.progress') }}" class="btn btn-secondary mb-3">
+        <i class="fe fe-arrow-left fe-16"></i> Back
+    </a>
 
     <div class="row">
         <div class="col-md-12 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">{{ $associate->name }} Progress Breakup</h5>
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title">
+                        <i class="fe fe-user fe-16 mr-1"></i> {{ $associate->name }} — Monthly Breakup
+                    </strong>
+                </div>
+                <div class="cds-table-wrap">
                     @include('components.message')
-                    <table class="table table-hover att-table text-center">
+                    <table class="table table-hover att-table text-center mb-0">
                         <thead>
                             <tr>
-                                <th>Month</th>
+                                <th class="text-left">Month</th>
                                 <th>Year</th>
                                 <th>Presents</th>
                                 <th>Absents</th>
@@ -26,30 +32,31 @@
                         </thead>
                         <tbody>
                             @if($associate->opening_presents || $associate->opening_absents || $associate->opening_leaves)
-                                <tr style="font-weight: bold; background-color: #f0f0f0;">
-                                    <td colspan="2">Opening</td>
-                                    <td>{{ $associate->opening_presents ?? 0 }}</td>
-                                    <td>{{ $associate->opening_absents ?? 0 }}</td>
-                                    <td>{{ $associate->opening_leaves ?? 0 }}</td>
-                                    <td></td>
+                                <tr class="cds-opening-row">
+                                    <td class="text-left font-weight-bold">Opening Balance</td>
+                                    <td>—</td>
+                                    <td class="cds-stat-presents font-weight-bold">{{ $associate->opening_presents ?? 0 }}</td>
+                                    <td class="cds-stat-absents font-weight-bold">{{ $associate->opening_absents ?? 0 }}</td>
+                                    <td class="cds-stat-leaves font-weight-bold">{{ $associate->opening_leaves ?? 0 }}</td>
+                                    <td>—</td>
                                 </tr>
                             @endif
 
                             @forelse($records as $record)
-                            <tr class="text-dark">
-                                <td class="font-weight-bold">{{ $record->month }}</td>
-                                <td class="font-weight-bold">{{ $record->year }}</td>
-                                <td>{{ $record->total_presents ?? '-' }}</td>
-                                <td>{{ $record->total_absents ?? '-' }}</td>
-                                <td>{{ $record->total_leaves ?? '-' }}</td>
+                            <tr>
+                                <td class="text-left font-weight-bold">{{ $record->month }}</td>
+                                <td>{{ $record->year }}</td>
+                                <td class="cds-stat-presents font-weight-bold">{{ $record->total_presents ?? '—' }}</td>
+                                <td class="cds-stat-absents font-weight-bold">{{ $record->total_absents ?? '—' }}</td>
+                                <td class="cds-stat-leaves font-weight-bold">{{ $record->total_leaves ?? '—' }}</td>
                                 <td>
                                     <a wire:navigate href="{{ route('e.month.details', [
                                             'id' => $associate->id,
                                             'year' => $record->year,
                                             'month' => $record->month_num
                                         ]) }}"
-                                        class="btn btn-sm btn-primary">
-                                        View Details
+                                        class="btn btn-sm btn-secondary">
+                                        <i class="fe fe-calendar fe-12 mr-1"></i> Details
                                     </a>
                                 </td>
                             </tr>
@@ -58,7 +65,6 @@
                             @endforelse
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>

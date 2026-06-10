@@ -74,16 +74,21 @@
 </head>
 <body>
 
-<div class="no-print" style="text-align:right;padding:10px 24px;background:#f8f9fa;border-bottom:1px solid #dee2e6;">
-    <button onclick="window.print()" style="background:#f4af1a;color:#fff;border:none;padding:8px 20px;border-radius:4px;font-weight:600;cursor:pointer;margin-right:8px;font-family:Arial,sans-serif;">
-        &#128438; Print / Save PDF
-    </button>
-    <a href="{{ route('e.documents.edit', $doc->id) }}" style="background:#fd7e14;color:#fff;border:none;padding:8px 20px;border-radius:4px;font-weight:600;cursor:pointer;text-decoration:none;margin-right:8px;font-family:Arial,sans-serif;">
-        &#9998; Edit
-    </a>
-    <a href="{{ route('e.documents') }}" style="background:#6c757d;color:#fff;border:none;padding:8px 20px;border-radius:4px;font-weight:600;cursor:pointer;text-decoration:none;font-family:Arial,sans-serif;">
-        &larr; Back
-    </a>
+<div class="no-print" style="display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:#161616;border-bottom:1px solid #393939;">
+    <span style="font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;color:#8d8d8d;letter-spacing:0.5px;">
+        {{ $doc->client_name }} &nbsp;—&nbsp; {{ $doc->created_at->format('d M Y') }}
+    </span>
+    <div style="display:flex;gap:8px;">
+        <button onclick="window.print()" style="background:#f4f4f4;color:#161616;border:none;padding:7px 18px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
+            Print / Save PDF
+        </button>
+        <a href="{{ route('e.documents.edit', $doc->id) }}" style="background:#393939;color:#f4f4f4;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
+            Edit
+        </a>
+        <a href="{{ route('e.documents') }}" style="background:transparent;color:#8d8d8d;border:1px solid #525252;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
+            &larr; Back
+        </a>
+    </div>
 </div>
 
 <div class="page">

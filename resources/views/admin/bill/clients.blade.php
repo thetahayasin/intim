@@ -5,9 +5,8 @@
 @section('content')
 
 <div class="col-md-12 container-fluid">
+    @include('components.message')
     @livewire('client-list')
-
-
 </div>
 
 

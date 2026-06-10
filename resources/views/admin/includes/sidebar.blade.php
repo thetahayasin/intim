@@ -1,4 +1,4 @@
-<aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+<aside class="sidebar-left" id="leftSidebar" data-simplebar>
   <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
     <i class="fe fe-x"><span class="sr-only"></span></i>
   </a>
@@ -6,7 +6,7 @@
     <!-- nav bar -->
     <div class="w-100 mb-4 d-flex">
       <a wire:navigate class="navbar-brand mx-auto mt-2 flex-fill text-center" href="{{ route('e.dash') }}">
-        <img class="aalogo logo-side" src="{{ asset('assets/img/logo-mini.png') }}" alt="Asif Associates Logo">
+        <img class="aalogo logo-side" src="{{ asset(\App\Models\Setting::get('site_logo', 'assets/img/logo-mini.png')) }}" alt="Asif Associates Logo">
       </a>
     </div>
     <ul class="navbar-nav flex-fill w-100 mb-2">
@@ -76,13 +76,13 @@
       <li class="nav-item dropdown">
         <a href="{{ route('e.documents') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.documents') || Route::currentRouteNamed('e.documents.create') || Route::currentRouteNamed('e.documents.view') ? 'side-select' : '' }}">
           <i class="fe fe-file fe-16"></i>
-          <span class="ml-3 item-text">Agreements <span class="badge badge-warning" style="font-size:9px;vertical-align:middle;">Beta</span></span>
+          <span class="ml-3 item-text">Agreements <span class="cds-tag">Beta</span></span>
         </a>
       </li>
       <li class="nav-item dropdown">
         <a href="{{ route('e.resources') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.resources') || Route::currentRouteNamed('e.resources.create') ? 'side-select' : '' }}">
           <i class="fe fe-folder fe-16"></i>
-          <span class="ml-3 item-text">Resources <span class="badge badge-warning" style="font-size:9px;vertical-align:middle;">Beta</span></span>
+          <span class="ml-3 item-text">Resources <span class="cds-tag">Beta</span></span>
         </a>
       </li>
     </ul>
@@ -91,9 +91,9 @@
     </p>
     <ul class="navbar-nav flex-fill w-100 mb-2">
       <li class="nav-item dropdown">
-        <a href="{{ route('e.password') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.password') ? 'side-select' : '' }}">
-          <i class="fe fe-lock fe-16"></i>
-          <span class="ml-3 item-text">Change Password</span>
+        <a href="{{ route('e.settings') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.settings') ? 'side-select' : '' }}">
+          <i class="fe fe-settings fe-16"></i>
+          <span class="ml-3 item-text">Settings</span>
         </a>
       </li>
 

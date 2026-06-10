@@ -1,4 +1,4 @@
-<aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+<aside class="sidebar-left" id="leftSidebar" data-simplebar>
   <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
     <i class="fe fe-x"><span class="sr-only"></span></i>
   </a>
@@ -48,7 +48,7 @@
       <li class="nav-item dropdown">
         <a href="{{ route('ass.resources') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('ass.resources') ? 'side-select' : '' }}">
           <i class="fe fe-folder fe-16"></i>
-          <span class="ml-3 item-text">Resources <span class="badge badge-warning" style="font-size:9px;vertical-align:middle;">Beta</span></span>
+          <span class="ml-3 item-text">Resources <span class="cds-tag">Beta</span></span>
         </a>
       </li>
     </ul>

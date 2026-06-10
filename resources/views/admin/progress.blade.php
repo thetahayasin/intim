@@ -7,19 +7,21 @@
 <div class="col-md-12 container-fluid">
     <div class="row">
         <div class="col-md-12 my-4">
-            <div class="card shadow">
-                <div class="card-body att-body">
-                    <h5 class="card-title">Associates Progress</h5>
+            <div class="card">
+                <div class="card-header">
+                    <strong class="card-title"><i class="fe fe-trending-up fe-16 mr-1"></i> Associates Progress</strong>
+                </div>
+                <div class="cds-table-wrap">
                     @include('components.message')
-                    <table class="table table-hover att-table">
+                    <table class="table table-hover att-table mb-0">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>CRN</th>
-                                <th>Presents</th>
-                                <th>Absents</th>
-                                <th>Leaves</th>
-                                <th>Breakup</th>
+                                <th class="text-center">Presents</th>
+                                <th class="text-center">Absents</th>
+                                <th class="text-center">Leaves</th>
+                                <th class="text-center">Breakup</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -27,35 +29,25 @@
                             <tr>
                                 <td>
                                     @if(!$record->active)
-                                        <span class="badge bg-danger text-white me-1">Deactivated</span>
+                                        <span class="badge badge-danger mr-1">Deactivated</span>
                                     @endif
-                                    {{ $record->name }}
+                                    <strong>{{ $record->name }}</strong>
                                 </td>
-                                <td>{{ $record->crn ?? '-' }}</td>
-                                <td>
-                                    {{ isset($record->total_presents) && isset($record->opening_presents) 
-                                        ? $record->total_presents + $record->opening_presents 
-                                        : '-' 
-                                    }}
+                                <td class="text-secondary">{{ $record->crn ?? '—' }}</td>
+                                <td class="text-center font-weight-bold cds-stat-presents">
+                                    {{ isset($record->total_presents) ? $record->total_presents + $record->opening_presents : '—' }}
                                 </td>
-                                
-                                <td>
-                                    {{ isset($record->total_absents) && isset($record->opening_absents) 
-                                        ? $record->total_absents + $record->opening_absents 
-                                        : '-' 
-                                    }}
+                                <td class="text-center font-weight-bold cds-stat-absents">
+                                    {{ isset($record->total_absents) ? $record->total_absents + $record->opening_absents : '—' }}
                                 </td>
-                                
-                                <td>
-                                    {{ isset($record->total_leaves) && isset($record->opening_leaves) 
-                                        ? $record->total_leaves + $record->opening_leaves 
-                                        : '-' 
-                                    }}
+                                <td class="text-center font-weight-bold cds-stat-leaves">
+                                    {{ isset($record->total_leaves) ? $record->total_leaves + $record->opening_leaves : '—' }}
                                 </td>
-
-                                <td>                                    
-                                    <!-- Edit button -->
-                                    <a wire:navigate href="{{ route('e.progress.breakup', $record->id) }}" class="btn btn-primary btn-sm"><i class="fe fe-eye fe-16"></i></a>
+                                <td class="text-center">
+                                    <a wire:navigate href="{{ route('e.progress.breakup', $record->id) }}"
+                                       class="btn btn-secondary btn-sm">
+                                        <i class="fe fe-eye fe-14 mr-1"></i> Breakup
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach

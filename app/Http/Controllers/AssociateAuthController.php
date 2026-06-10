@@ -32,7 +32,7 @@ class AssociateAuthController extends Controller
         }
 
         // Authentication failed for employee...
-        return redirect()->back()->withErrors(['email' => 'Invalid email or password']);
+        return redirect()->back()->withErrors(['email' => 'Invalid email or password'])->withInput();
 
     }
 

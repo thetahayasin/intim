@@ -59,19 +59,19 @@
                         <div class="form-group mb-4">
                             <label><strong>File</strong></label>
                             <div id="dropZone" onclick="document.getElementById('fileInput').click()"
-                                 style="border: 2px dashed #ced4da; border-radius: 10px; padding: 36px 24px; text-align: center; cursor: pointer; transition: all .2s; background: #fafafa;">
-                                <div id="dropIcon" style="font-size: 2.5rem; margin-bottom: 10px; color: #adb5bd;">
+                                 style="border: 2px dashed #c6c6c6; padding: 36px 24px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; background: #f4f4f4;">
+                                <div id="dropIcon" style="font-size: 2.5rem; margin-bottom: 10px; color: #8d8d8d;">
                                     <i class="fe fe-upload-cloud"></i>
                                 </div>
-                                <div id="dropLabel" style="font-weight: 600; color: #495057; margin-bottom: 4px;">
+                                <div id="dropLabel" style="font-weight: 600; color: var(--cds-text-primary); margin-bottom: 4px;">
                                     Click or drag &amp; drop a file here
                                 </div>
-                                <div style="font-size: 12px; color: #adb5bd;">Any file type &nbsp;•&nbsp; Max 20 MB</div>
+                                <div style="font-size: 12px; color: #8d8d8d;">Any file type &nbsp;•&nbsp; Max 20 MB</div>
                                 <div id="fileInfo" style="display:none; margin-top:14px;">
-                                    <span id="fileChip" style="display:inline-flex;align-items:center;gap:8px;background:#e8f4fd;border:1px solid #bee3f8;border-radius:20px;padding:6px 14px;font-size:13px;color:#2d6a9f;font-weight:600;">
+                                    <span id="fileChip" style="display:inline-flex;align-items:center;gap:8px;background:#e0e0e0;border:1px solid #8d8d8d;padding:6px 14px;font-size:13px;color:var(--cds-text-primary);font-weight:600;">
                                         <i class="fe fe-file fe-12"></i>
                                         <span id="fileName"></span>
-                                        <span id="fileSize" style="font-weight:400;color:#6c9ec9;"></span>
+                                        <span id="fileSize" style="font-weight:400;color:#525252;"></span>
                                     </span>
                                 </div>
                             </div>
@@ -81,17 +81,17 @@
 
                             {{-- Upload progress bar (shown during submit) --}}
                             <div id="progressWrap" style="display:none; margin-top:12px;">
-                                <div style="display:flex;justify-content:space-between;font-size:12px;color:#6c757d;margin-bottom:4px;">
+                                <div style="display:flex;justify-content:space-between;font-size:12px;color:#525252;margin-bottom:4px;">
                                     <span>Uploading...</span><span id="progressPct">0%</span>
                                 </div>
-                                <div style="height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">
-                                    <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4dabf7,#228be6);border-radius:4px;transition:width .1s;"></div>
+                                <div class="progress">
+                                    <div id="progressBar" class="progress-bar" role="progressbar" style="width:0%;"></div>
                                 </div>
                             </div>
                         </div>
 
                         <hr>
-                        <button type="submit" id="submitBtn" class="btn btn-primary btn-lg float-right">
+                        <button type="submit" id="submitBtn" class="btn btn-secondary btn-lg float-right">
                             <i class="fe fe-upload fe-16 mr-1"></i> Upload
                         </button>
                     </form>
@@ -123,9 +123,9 @@
         fileSize.textContent = '(' + formatBytes(file.size) + ')';
         fileInfo.style.display = 'block';
         dropLabel.textContent  = 'File selected';
-        dropIcon.innerHTML = '<i class="fe fe-check-circle" style="color:#28a745;"></i>';
-        dropZone.style.borderColor = '#28a745';
-        dropZone.style.background  = '#f0fff4';
+        dropIcon.innerHTML = '<i class="fe fe-check-circle" style="color:#161616;"></i>';
+        dropZone.style.borderColor = '#161616';
+        dropZone.style.background  = '#e0e0e0';
     }
 
     fileInput.addEventListener('change', function() {
@@ -134,17 +134,17 @@
 
     dropZone.addEventListener('dragover', function(e) {
         e.preventDefault();
-        this.style.borderColor = '#4dabf7';
-        this.style.background  = '#e8f4fd';
+        this.style.borderColor = '#525252';
+        this.style.background  = '#e0e0e0';
     });
     dropZone.addEventListener('dragleave', function() {
-        this.style.borderColor = '#ced4da';
-        this.style.background  = '#fafafa';
+        this.style.borderColor = '#c6c6c6';
+        this.style.background  = '#f4f4f4';
     });
     dropZone.addEventListener('drop', function(e) {
         e.preventDefault();
-        this.style.borderColor = '#ced4da';
-        this.style.background  = '#fafafa';
+        this.style.borderColor = '#c6c6c6';
+        this.style.background  = '#f4f4f4';
         var file = e.dataTransfer.files[0];
         if (file) {
             var dt = new DataTransfer();

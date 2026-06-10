@@ -6,79 +6,44 @@
 
 <div class="col-md-12 container-fluid">
 
+    {{-- Row 1: Donut Charts on top --}}
     <div class="row my-4">
-
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="row align-items-center">
-                <div class="col">
-                    <small class="text-muted mb-1">Cumulative</small>
-                    <h3 class="card-title mb-0">Associates</h3>
-                    <p class="small text-muted mb-0">
-                    <span class="aa-color" style="font-size:1.5rem; font-weight:700;">{{ $numberOfAss }}</span>
-                    </p>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> 7-Day Financial Breakdown</strong>
                 </div>
-                <div class="col-4 text-right">
-                    <i class="fe fe-user-check fe-32" style="color: #f4af1a;"></i>
+                <div class="card-body" style="height: 300px; position: relative;">
+                    <canvas id="billingChart"></canvas>
                 </div>
-                </div>
-            </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="row align-items-center">
-                <div class="col">
-                    <small class="text-muted mb-1">Cumulative</small>
-                    <h3 class="card-title mb-0">Work Hours</h3>
-                    <p class="small text-muted mb-0">
-                    <span class="aa-color" style="font-size:1.5rem; font-weight:700;">{{ $totalWorkHours }}</span>
-                    </p>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong class="card-title mb-0"><i class="fe fe-users fe-16 mr-1"></i> Associate Status</strong>
                 </div>
-                <div class="col-4 text-right">
-                    <i class="fe fe-clock fe-32" style="color: #17a2b8;"></i>
+                <div class="card-body" style="height: 300px; position: relative;">
+                    <canvas id="associateChart"></canvas>
                 </div>
-                </div>
-            </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="row align-items-center">
-                <div class="col">
-                    <small class="text-muted mb-1">Cumulative</small>
-                    <h3 class="card-title mb-0">Pending Leaves</h3>
-                    <p class="small text-muted mb-0">
-                    <span class="aa-color" style="font-size:1.5rem; font-weight:700;">{{ $totalLeaves }}</span>
-                    </p>
-                </div>
-                <div class="col-4 text-right">
-                    <i class="fe fe-cloud-drizzle fe-32" style="color: #dc3545;"></i>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
     </div>
 
-    {{-- Financial Summary Table --}}
+    {{-- Row 2: Financial Table + Stat Cards --}}
     <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow mb-4">
+
+        {{-- Financial Overview --}}
+        <div class="col-md-7">
+            <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <strong class="card-title mb-0"><i class="fe fe-dollar-sign fe-16 mr-1"></i> Financial Overview</strong>
-                    <a href="{{ route('export.client.report') }}" class="btn btn-sm btn-primary">
-                        <i class="fe fe-download fe-12 mr-1"></i> Export Excel
+                    <a href="{{ route('export.client.report') }}" class="btn btn-sm btn-secondary">
+                        <i class="fe fe-download fe-12"></i> Export Excel
                     </a>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-hover mb-0">
+                    <table class="table mb-0">
                         <tbody>
                             <tr>
                                 <td><strong>Gross Sales (Services)</strong></td>
@@ -86,7 +51,7 @@
                             </tr>
                             <tr>
                                 <td><strong>Sales Tax Payable (Billed to Client)</strong></td>
-                                <td class="text-right text-warning"><strong>Rs. {{ number_format($totalTaxb) }}</strong></td>
+                                <td class="text-right text-secondary"><strong>Rs. {{ number_format($totalTaxb) }}</strong></td>
                             </tr>
                             <tr>
                                 <td><strong>Total Invoiced Amount</strong></td>
@@ -108,64 +73,77 @@
                                 <td><strong>Receipt Discounts / Bad Debts</strong></td>
                                 <td class="text-right text-danger"><strong>- Rs. {{ number_format($totalDiscount) }}</strong></td>
                             </tr>
-                            <tr style="background: linear-gradient(135deg, #fff9e6, #fff3cc); border-top: 2px solid #f4af1a;">
-                                <td><strong style="font-size: 1.1rem;">Net Receivable Balance</strong></td>
-                                <td class="text-right aa-color"><strong style="font-size: 1.25rem;">Rs. {{ number_format(($totalSales + $totalTaxb) - ($totalBillingDiscount ?? 0) - $totalDiscount - $totalReceipts - $totalTax) }}</strong></td>
+                            <tr class="cds-highlight-row">
+                                <td><strong style="font-size: 1rem;">Net Receivable Balance</strong></td>
+                                <td class="text-right aa-color"><strong style="font-size: 1.15rem;">Rs. {{ number_format(($totalSales + $totalTaxb) - ($totalBillingDiscount ?? 0) - $totalDiscount - $totalReceipts - $totalTax) }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
+        {{-- Stat Cards --}}
+        <div class="col-md-5">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <small class="text-muted d-block mb-1">Cumulative</small>
+                            <div class="h5 mb-0 font-weight-bold">Associates</div>
+                            <div class="aa-color mt-1" style="font-size:1.75rem; font-weight:700; line-height:1;">{{ $numberOfAss }}</div>
+                        </div>
+                        <i class="fe fe-user-check" style="font-size:2rem; color: var(--cds-border-strong);"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <small class="text-muted d-block mb-1">Cumulative</small>
+                            <div class="h5 mb-0 font-weight-bold">Work Hours</div>
+                            <div class="cds-stat-hours" style="font-size:1.75rem; font-weight:700; line-height:1; margin-top:4px;">{{ $totalWorkHours }}</div>
+                        </div>
+                        <i class="fe fe-clock" style="font-size:2rem; color: var(--cds-border-strong);"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <small class="text-muted d-block mb-1">Cumulative</small>
+                            <div class="h5 mb-0 font-weight-bold">Pending Leaves</div>
+                            <div class="cds-stat-absents" style="font-size:1.75rem; font-weight:700; line-height:1; margin-top:4px;">{{ $totalLeaves }}</div>
+                        </div>
+                        <i class="fe fe-cloud-drizzle" style="font-size:2rem; color: var(--cds-border-strong);"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    {{-- 7-Day Trend Chart - Full Width --}}
+    {{-- Row 3: Trend Chart + Ayat (2 columns) --}}
     <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow mb-4">
+        <div class="col-md-8">
+            <div class="card mb-4">
                 <div class="card-header">
                     <strong class="card-title mb-0"><i class="fe fe-trending-up fe-16 mr-1"></i> Last 7 Days — Billings vs Receipts</strong>
                 </div>
-                <div class="card-body" style="height: 350px; position: relative;">
+                <div class="card-body" style="height: 320px; position: relative;">
                     <canvas id="weeklyTrendChart"></canvas>
                 </div>
             </div>
         </div>
-    </div>
-
-    {{-- Doughnut + Bar Charts --}}
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> 7-Day Financial Breakdown</strong>
-                </div>
-                <div class="card-body" style="height: 320px; position: relative;">
-                    <canvas id="billingChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-users fe-16 mr-1"></i> Associate Status</strong>
-                </div>
-                <div class="card-body" style="height: 320px; position: relative;">
-                    <canvas id="associateChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Quran Ayat --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow mb-4">
-                <div class="card-body">
-                    <div class="ayat text-center">
+        <div class="col-md-4">
+            <div class="card mb-4" style="height: calc(100% - 1.5rem);">
+                <div class="card-body d-flex align-items-center justify-content-center text-center">
+                    <div>
                         <span class="ayat-text"><b>"the life of this world is no more than the delusion of enjoyment"</b></span>
-                        <br>
-                        <span class="ref-text"><i>Quran (3:185)</i></span>
+                        <br><br>
+                        <span class="text-muted"><i>Quran (3:185)</i></span>
                     </div>
                 </div>
             </div>
@@ -177,128 +155,135 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+{{-- Server-side values: {!! !!} avoids Blade HTML-escaping quotes which breaks JSON.parse --}}
+<script id="dashTrendData" type="application/json">{!! json_encode(['labels' => $dailyLabels, 'billings' => $dailyBillings, 'receipts' => $dailyReceipts]) !!}</script>
+<script id="dashBillingData" type="application/json">{!! json_encode(['invoiced' => $weeklySales + $weeklyTaxb, 'receipts' => $weeklyReceipts, 'discounts' => $weeklyDiscount + ($weeklyBillingDiscount ?? 0), 'tax' => $weeklyTax]) !!}</script>
+<script id="dashAssocData" type="application/json">{!! json_encode(['active' => $activeAssociates, 'archived' => $archivedAssociates]) !!}</script>
+
 <script>
-function initDashboardCharts() {
-    // Destroy existing charts if traversing back to clean canvas state
-    Chart.getChart("weeklyTrendChart")?.destroy();
-    Chart.getChart("billingChart")?.destroy();
-    Chart.getChart("associateChart")?.destroy();
+(function() {
+    var PLEX = { family: 'IBM Plex Sans', size: 12 };
+    var _charts = {};
 
-    // 7-Day Trend Line Chart
-    var weeklyEl = document.getElementById('weeklyTrendChart');
-    if (weeklyEl) {
-        new Chart(weeklyEl.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($dailyLabels) !!},
-                datasets: [
-                    {
-                        label: 'Billings',
-                        data: {!! json_encode($dailyBillings) !!},
-                        borderColor: 'rgba(244, 175, 26, 1)',
-                        backgroundColor: 'rgba(244, 175, 26, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(244, 175, 26, 1)',
-                    },
-                    {
-                        label: 'Receipts',
-                        data: {!! json_encode($dailyReceipts) !!},
-                        borderColor: 'rgba(40, 167, 69, 1)',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointBackgroundColor: 'rgba(40, 167, 69, 1)',
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(0,0,0,0.05)' },
-                        ticks: {
-                            callback: function(v) { return 'Rs. ' + v.toLocaleString(); }
+    function destroyAll() {
+        ['weeklyTrendChart', 'billingChart', 'associateChart'].forEach(function(id) {
+            if (_charts[id]) { try { _charts[id].destroy(); } catch(e) {} _charts[id] = null; }
+        });
+    }
+
+    function buildCharts() {
+        var trendEl = document.getElementById('dashTrendData');
+        if (!trendEl) return; // not on this page
+
+        destroyAll();
+
+        var trend   = JSON.parse(trendEl.textContent);
+        var billing = JSON.parse(document.getElementById('dashBillingData').textContent);
+        var assoc   = JSON.parse(document.getElementById('dashAssocData').textContent);
+
+        // 7-Day Trend
+        var weeklyEl = document.getElementById('weeklyTrendChart');
+        if (weeklyEl) {
+            _charts.weeklyTrendChart = new Chart(weeklyEl, {
+                type: 'line',
+                data: {
+                    labels: trend.labels,
+                    datasets: [
+                        {
+                            label: 'Billings',
+                            data: trend.billings,
+                            borderColor: '#161616',
+                            backgroundColor: 'rgba(22,22,22,0.06)',
+                            fill: true, tension: 0.4, borderWidth: 2,
+                            pointRadius: 4, pointBackgroundColor: '#161616'
+                        },
+                        {
+                            label: 'Receipts',
+                            data: trend.receipts,
+                            borderColor: '#525252',
+                            backgroundColor: 'rgba(82,82,82,0.06)',
+                            fill: true, tension: 0.4, borderWidth: 2,
+                            borderDash: [5, 3],
+                            pointRadius: 4, pointBackgroundColor: '#525252'
                         }
-                    },
-                    x: { grid: { display: false } }
+                    ]
                 },
-                plugins: {
-                    legend: { position: 'top' },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) { return ctx.dataset.label + ': Rs. ' + ctx.parsed.y.toLocaleString(); }
-                        }
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { callback: function(v) { return 'Rs. ' + v.toLocaleString(); }, font: PLEX }
+                        },
+                        x: { grid: { display: false }, ticks: { font: PLEX } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'IBM Plex Sans', size: 13 }, usePointStyle: true, padding: 16 } },
+                        tooltip: { callbacks: { label: function(ctx) { return ctx.dataset.label + ': Rs. ' + ctx.parsed.y.toLocaleString(); } } }
                     }
                 }
-            }
-        });
-    }
+            });
+        }
 
-    // Financial Doughnut Chart (7 Days)
-    var billingEl = document.getElementById('billingChart');
-    if (billingEl) {
-        var invoiced = {{ $weeklySales + $weeklyTaxb }};
-        var receipts = {{ $weeklyReceipts }};
-        var discounts = {{ $weeklyDiscount + ($weeklyBillingDiscount ?? 0) }};
-        var taxWithheld = {{ $weeklyTax }};
-        var payable = invoiced - discounts - receipts - taxWithheld;
-
-        new Chart(billingEl.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Receipts', 'Discounts', 'Tax Withheld', 'Outstanding'],
-                datasets: [{
-                    data: [receipts, discounts, taxWithheld, payable > 0 ? payable : 0],
-                    backgroundColor: ['rgba(40,167,69,0.85)', 'rgba(220,53,69,0.85)', 'rgba(255,193,7,0.85)', 'rgba(244,175,26,0.85)'],
-                    borderWidth: 2, hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: '55%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 12, usePointStyle: true } },
-                    tooltip: { callbacks: { label: function(c) { return c.label + ': Rs. ' + c.parsed.toLocaleString(); } } }
+        // Financial Doughnut
+        var billingEl = document.getElementById('billingChart');
+        if (billingEl) {
+            var inv  = billing.invoiced, rec = billing.receipts,
+                dis  = billing.discounts, tax = billing.tax,
+                out  = inv - dis - rec - tax;
+            _charts.billingChart = new Chart(billingEl, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Receipts', 'Discounts', 'Tax Withheld', 'Outstanding'],
+                    datasets: [{
+                        data: [rec, dis, tax, out > 0 ? out : 0],
+                        backgroundColor: ['#161616', '#525252', '#8d8d8d', '#c6c6c6'],
+                        borderColor: '#ffffff', borderWidth: 2, hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '58%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true, font: PLEX } },
+                        tooltip: { callbacks: { label: function(c) { return c.label + ': Rs. ' + c.parsed.toLocaleString(); } } }
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
 
-    // Associate Status Doughnut
-    var assocEl = document.getElementById('associateChart');
-    if (assocEl) {
-        new Chart(assocEl.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Active', 'Archived'],
-                datasets: [{
-                    data: [{{ $activeAssociates }}, {{ $archivedAssociates }}],
-                    backgroundColor: ['rgba(40,167,69,0.85)', 'rgba(220,53,69,0.85)'],
-                    borderColor: ['rgba(40,167,69,1)', 'rgba(220,53,69,1)'],
-                    borderWidth: 2, hoverOffset: 8
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: '55%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } },
-                    tooltip: { callbacks: { label: function(c) { return c.label + ': ' + c.parsed; } } }
+        // Associate Doughnut
+        var assocEl = document.getElementById('associateChart');
+        if (assocEl) {
+            _charts.associateChart = new Chart(assocEl, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Archived'],
+                    datasets: [{
+                        data: [assoc.active, assoc.archived],
+                        backgroundColor: ['#161616', '#c6c6c6'],
+                        borderColor: '#ffffff', borderWidth: 2, hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '58%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true, font: PLEX } },
+                        tooltip: { callbacks: { label: function(c) { return c.label + ': ' + c.parsed; } } }
+                    }
                 }
-            }
-        });
+            });
+        }
     }
-}
 
-// Mount for standard hard-loads (F5) explicitly to prevent boot misses:
-document.addEventListener('DOMContentLoaded', initDashboardCharts);
-// Mount for Livewire SPA inner-transitions:
-document.addEventListener('livewire:navigated', initDashboardCharts);
+    function init() { setTimeout(buildCharts, 50); }
+
+    // Remove any stale listener from a previous dashboard visit, then add fresh one
+    document.removeEventListener('livewire:navigated', init);
+    document.addEventListener('livewire:navigated', init);
+
+    // Run now (handles both fresh load and Livewire navigation script re-evaluation)
+    init();
+})();
 </script>
 @endsection

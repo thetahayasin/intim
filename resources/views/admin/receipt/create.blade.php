@@ -10,19 +10,21 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var initInterval = setInterval(function() {
-            if (typeof jQuery !== 'undefined' && jQuery.fn.select2) {
-                clearInterval(initInterval);
-                
-                jQuery('#receipt_client_id').select2({ width: '100%', placeholder: '-- Select Client --', allowClear: true });
+function initReceiptSelect2() {
+    if (!document.getElementById('receipt_client_id')) return;
+    if (typeof jQuery === 'undefined' || !jQuery.fn.select2) { setTimeout(initReceiptSelect2, 80); return; }
 
-                jQuery('#receipt_client_id').on('change', function() {
-                    var component = Livewire.find(document.querySelector('[wire\\:id]').getAttribute('wire:id'));
-                    if (component) component.set('client_id', jQuery(this).val() || '');
-                });
-            }
-        }, 100);
+    if (jQuery('#receipt_client_id').data('select2')) jQuery('#receipt_client_id').select2('destroy');
+    jQuery('#receipt_client_id').select2({ width: '100%', placeholder: '-- Select Client --', allowClear: true });
+
+    jQuery('#receipt_client_id').off('change.lwr').on('change.lwr', function() {
+        var el = document.querySelector('[wire\\:id]');
+        if (el) { var c = Livewire.find(el.getAttribute('wire:id')); if (c) c.set('client_id', jQuery(this).val() || ''); }
     });
+}
+
+document.removeEventListener('livewire:navigated', initReceiptSelect2);
+document.addEventListener('livewire:navigated', initReceiptSelect2);
+initReceiptSelect2();
 </script>
 @endsection

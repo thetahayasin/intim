@@ -97,7 +97,7 @@
                     </div>
                     </div>
                 </div>
-                <div class="list-group-item" style="background: linear-gradient(135deg, #fff9e6, #fff3cc); border-left: 4px solid #f4af1a;">
+                <div class="list-group-item cds-list-highlight">
                     <div class="row align-items-center">
                     <div class="col">
                         <strong class="mb-1 text-dark">Net Receivable Balance</strong>
@@ -149,10 +149,14 @@
                                                     <button type="submit" class="btn btn-warning btn-sm px-2 py-1" style="font-size: 0.75rem;"><i class="fe fe-pause-circle"></i> Stop</button>
                                                 </form>
                                             @endif
-                                            <form action="{{ route('e.billing.delete', $b->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this billing?');">
+                                            <form action="{{ route('e.billing.delete', $b->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-1" style="font-size: 0.75rem;"><i class="fe fe-trash-2"></i></button>
+                                                <button type="submit" class="btn btn-secondary btn-sm px-2 py-1"
+                                                        data-confirm-delete="Delete this billing? This cannot be undone."
+                                                        style="font-size:0.75rem;">
+                                                    <i class="fe fe-trash-2"></i>
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
@@ -198,10 +202,14 @@
                                             <small class="text-muted">Gross Amount</small>
                                         </h6>
                                         <div class="mt-2">
-                                            <form action="{{ route('e.receipt.delete', $b->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this receipt?');">
+                                            <form action="{{ route('e.receipt.delete', $b->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-1" style="font-size: 0.75rem;"><i class="fe fe-trash-2"></i></button>
+                                                <button type="submit" class="btn btn-secondary btn-sm px-2 py-1"
+                                                        data-confirm-delete="Delete this receipt? This cannot be undone."
+                                                        style="font-size:0.75rem;">
+                                                    <i class="fe fe-trash-2"></i>
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
