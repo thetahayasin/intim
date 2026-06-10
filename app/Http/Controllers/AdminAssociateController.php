@@ -13,7 +13,7 @@ class AdminAssociateController extends Controller
     public function index()
     {
         // Get all records from your model
-        $records = Associate::all();
+        $records = Associate::orderByDesc('active')->orderBy('name')->get();
         
         // Pass the records to the view
         return view('admin.associates', ['records' => $records]);
