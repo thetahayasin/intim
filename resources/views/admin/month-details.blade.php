@@ -170,9 +170,9 @@
                                             value="{{ $row->reason_for_leave ?? '' }}" placeholder="Leave reason…">
                                     </div>
                                     <div class="col-auto mb-2">
-                                        <label class="small font-weight-bold d-block mb-1">Work Hours</label>
+                                        <label class="small font-weight-bold d-block mb-1" style="white-space:nowrap;">Work Hours</label>
                                         <input type="number" name="work_hours" class="form-control form-control-sm"
-                                            value="{{ $row->work_hours ?? '' }}" min="0" max="24" placeholder="—" style="width:80px;">
+                                            value="{{ $row->work_hours ?? '' }}" min="0" max="24" placeholder="—" style="width:105px;">
                                     </div>
                                     <div class="col-auto mb-2 d-flex align-items-end" style="gap:6px;">
                                         <button type="submit" class="btn btn-sm btn-primary att-save-btn">
