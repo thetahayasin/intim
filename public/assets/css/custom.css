@@ -198,43 +198,42 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 .sidebar-left .nav-item .nav-link.side-select .fe,
 .sidebar-left .nav-item .nav-link:hover .fe { color: #ffffff; }
 
-/* ── Collapsed sidebar: icon-only, no hover expansion ─────────────────────── */
+/* ── Collapsed sidebar ────────────────────────────────────────────────────────
+   Driven by html.sidebar-collapsed — Livewire morphdom never touches <html>,
+   so this class survives every wire:navigate with zero flinch.
+   .vertical.collapsed rules are kept as fallback for apps.js compat.
+   ─────────────────────────────────────────────────────────────────────────── */
 
-/* Lock sidebar at 5rem — no width change, no transition, no overflow escape */
-.vertical.collapsed .sidebar-left,
-.vertical.collapsed.hover .sidebar-left {
+html.sidebar-collapsed .sidebar-left {
   min-width: 5rem !important;
   width: 5rem !important;
   overflow: hidden !important;
   transition: none !important;
 }
-/* Lock topnav/main margins when collapsed (with or without .hover) */
-.vertical.collapsed .topnav,
-.vertical.collapsed .main-content,
-.vertical.collapsed.hover .topnav,
-.vertical.collapsed.hover .main-content {
+html.sidebar-collapsed .topnav,
+html.sidebar-collapsed .main-content {
   margin-left: 5rem !important;
   transition: none !important;
 }
 
-/* Keep text/dropdowns hidden when collapsed — override .vertical.hover which re-shows them */
-.vertical.collapsed .sidebar-left .navbar-nav > .nav-item > a > span,
-.vertical.collapsed .sidebar-left .navbar-nav > .nav-item > a .item-text,
-.vertical.collapsed .sidebar-left .navbar-nav > .nav-item > a.dropdown-toggle::after,
-.vertical.collapsed .sidebar-left .navbar-nav > .nav-item > ul.show,
-.vertical.collapsed .sidebar-left .nav-heading,
-.vertical.collapsed .sidebar-left .btn-box,
-.vertical.collapsed .sidebar-left .navbar-brand {
+/* Hide text, headings, brand — even when apps.js adds .hover to body */
+html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a > span,
+html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a .item-text,
+html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a.dropdown-toggle::after,
+html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > ul.show,
+html.sidebar-collapsed .sidebar-left .nav-heading,
+html.sidebar-collapsed .sidebar-left .btn-box,
+html.sidebar-collapsed .sidebar-left .navbar-brand {
   display: none !important;
 }
 
 /* Center icons, strip horizontal padding */
-.vertical.collapsed .sidebar-left .nav-item .nav-link {
+html.sidebar-collapsed .sidebar-left .nav-item .nav-link {
   padding: 14px 0 !important;
   justify-content: center;
   border-left: 3px solid transparent;
 }
-.vertical.collapsed .sidebar-left .nav-item .nav-link.side-select {
+html.sidebar-collapsed .sidebar-left .nav-item .nav-link.side-select {
   border-left: 3px solid var(--cds-interactive) !important;
 }
 

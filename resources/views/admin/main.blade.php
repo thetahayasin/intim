@@ -42,53 +42,53 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // ── Sidebar state management ─────────────────────────────────────────────
-    // Problem: Livewire morphdom resets <body class="vertical light"> on every
-    // navigate, wiping "collapsed" — browser can paint the expanded state before
-    // our script re-executes.
-    // Fix: MutationObserver on body fires in the microtask queue BEFORE any paint,
-    // so it restores "collapsed" the instant morphdom removes it — zero flash.
+    // ── Sidebar collapse ──────────────────────────────────────────────────────
+    // CSS is driven by html.sidebar-collapsed — Livewire morphdom never touches
+    // <html>, so the class (and layout) survives every wire:navigate with no flinch.
+    // apps.js still toggles .collapsed on <body> for its own logic; we mirror that.
     (function ($) {
         var KEY = 'sidebar_collapsed';
+        var html = document.documentElement;
 
-        // 1. One-time setup (persists across all navigations)
+        // Apply saved state immediately (runs on load and on each navigate re-exec)
+        if (sessionStorage.getItem(KEY) === '1') {
+            html.classList.add('sidebar-collapsed');
+            var v = document.querySelector('.vertical');
+            if (v) v.classList.add('collapsed');
+        }
+
+        // Strip apps.js hover handlers after they bind
+        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+
+        // One-time bindings — never re-add across navigations
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
 
-            // MutationObserver: restore collapsed the moment morphdom strips the class
-            var observer = new MutationObserver(function () {
-                if (sessionStorage.getItem(KEY) === '1') {
-                    var v = document.querySelector('.vertical');
-                    if (v && !v.classList.contains('collapsed')) {
-                        v.classList.add('collapsed');
-                    }
-                }
-            });
-            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-            // Persist state when toggle is clicked
+            // Mirror apps.js toggle: sync html class + persist to sessionStorage
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
                     setTimeout(function () {
-                        var v = document.querySelector('.vertical');
-                        sessionStorage.setItem(KEY, (v && v.classList.contains('collapsed')) ? '1' : '0');
+                        var isCollapsed = document.querySelector('.vertical') &&
+                                          document.querySelector('.vertical').classList.contains('collapsed');
+                        if (isCollapsed) {
+                            html.classList.add('sidebar-collapsed');
+                            sessionStorage.setItem(KEY, '1');
+                        } else {
+                            html.classList.remove('sidebar-collapsed');
+                            sessionStorage.setItem(KEY, '0');
+                        }
                     }, 50);
                 }
             });
 
-            // Strip hover handlers after every navigate
+            // After navigate: re-apply body class (html class already survived morphdom)
             document.addEventListener('livewire:navigated', function () {
+                if (sessionStorage.getItem(KEY) === '1') {
+                    var v = document.querySelector('.vertical');
+                    if (v) v.classList.add('collapsed');
+                }
                 setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
             });
-        }
-
-        // 2. Strip hover on this execution (covers initial load + navigate re-exec)
-        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
-
-        // 3. Apply saved state on initial load
-        if (sessionStorage.getItem(KEY) === '1') {
-            var v = document.querySelector('.vertical');
-            if (v) v.classList.add('collapsed');
         }
     })(jQuery);
     </script>
