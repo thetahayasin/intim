@@ -3,7 +3,7 @@
 @section('content')
 @php $activeTab = old('login_type', 'associate'); @endphp
 
-<div class="col-lg-4 col-md-5 col-11 mx-auto py-5">
+<div class="col-lg-3 col-md-4 col-sm-9 col-11 mx-auto py-5">
     <div class="text-center mb-4">
         <img class="aalogo" src="{{ asset(\App\Models\Setting::get('site_logo', 'assets/img/logo-full.png')) }}"
              alt="Asif Associates Logo" style="max-width:200px;height:auto;">
@@ -79,8 +79,8 @@
         </form>
     </div>
 
-    <p class="mt-5 mb-0 text-center text-muted small">
-        Made with &#129504; by <b>Taha Yasin</b>
+    <p class="mt-5 mb-0 text-center small" style="color:#161616;">
+        Made with <i class="fe fe-cpu" style="vertical-align:-2px;"></i> by <b>Taha Yasin</b>
     </p>
 </div>
 
