@@ -42,17 +42,10 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // apps.js unconditionally adds .hover on any sidebar mouseenter; override so it
-    // only fires when the sidebar is actually collapsed (preventing topnav position jumps)
+    // apps.js adds .hover on sidebar mouseenter (expands collapsed sidebar on hover).
+    // We disable that — collapsed stays icon-only, no hover expansion.
     (function($) {
-        $(function() {
-            $(".sidebar-left").off("mouseenter mouseleave");
-            $(".sidebar-left").on("mouseenter", function() {
-                if ($(".vertical").hasClass("collapsed")) $(".vertical").addClass("hover");
-            }).on("mouseleave", function() {
-                if ($(".vertical").hasClass("collapsed")) $(".vertical").removeClass("hover");
-            });
-        });
+        $(function() { $(".sidebar-left").off("mouseenter mouseleave"); });
     })(jQuery);
     </script>
     <script src="{{ asset('assets/js/chart.v4.min.js') }}"></script>
