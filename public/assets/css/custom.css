@@ -580,7 +580,7 @@ select.form-control option { background-color: #ffffff; color: var(--cds-text-pr
   text-transform: uppercase;
 }
 .badge-success   { background-color: #525252 !important; color: #fff !important; }
-.badge-danger    { background-color: var(--cds-support-error) !important; color: #fff !important; }
+.badge-danger    { background-color: #da1e28 !important; color: #fff !important; }
 .badge-warning   { background-color: #525252 !important; color: #fff !important; }
 .badge-info      { background-color: #525252 !important; color: #fff !important; }
 .badge-secondary { background-color: #6f6f6f !important; color: #fff !important; }
