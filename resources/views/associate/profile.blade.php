@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="">
-                    <div class="list-group mb-5 shadow">
+                    <div class="list-group mb-5">
                         <div class="list-group-item">
                             <div class="row align-items-center">
                                 <div class="col">
@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="col-md-4 col-lg-4">
-                <div class="card shadow">
+                <div class="card">
                     <div class="card-body att-body">
                         <h5 class="card-title">Instructions</h5>
                         <ul>
