@@ -200,17 +200,21 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 
 /* ── Collapsed sidebar: icon-only, no hover expansion ─────────────────────── */
 
-/* Lock sidebar at 5rem even if apps.js adds .hover class */
+/* Lock sidebar at 5rem — no width change, no transition, no overflow escape */
 .vertical.collapsed .sidebar-left,
 .vertical.collapsed.hover .sidebar-left {
   min-width: 5rem !important;
   width: 5rem !important;
   overflow: hidden !important;
+  transition: none !important;
 }
 /* Lock topnav/main margins when collapsed (with or without .hover) */
+.vertical.collapsed .topnav,
+.vertical.collapsed .main-content,
 .vertical.collapsed.hover .topnav,
 .vertical.collapsed.hover .main-content {
   margin-left: 5rem !important;
+  transition: none !important;
 }
 
 /* Keep text/dropdowns hidden when collapsed — override .vertical.hover which re-shows them */

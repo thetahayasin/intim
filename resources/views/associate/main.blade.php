@@ -44,37 +44,44 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // apps.js binds mouseenter/mouseleave on .sidebar-left to expand it on hover.
-    // CSS already locks the size, but we also strip the handlers so .hover class
-    // is never added (prevents topnav margin flash). Must re-run after Livewire navigate.
-    (function($) {
-        function stripSidebarHover() {
-            setTimeout(function() { $(".sidebar-left").off("mouseenter mouseleave"); }, 0);
+    // ── Sidebar state management ────────────────────────────────────────────
+    (function ($) {
+        var KEY = 'sidebar_collapsed';
+
+        // 1. Restore collapsed state IMMEDIATELY (synchronous — no setTimeout)
+        if (sessionStorage.getItem(KEY) === '1') {
+            var v = document.querySelector('.vertical');
+            if (v) v.classList.add('collapsed');
         }
-        $(stripSidebarHover);
-        document.addEventListener('livewire:navigated', stripSidebarHover);
+
+        // 2. Strip apps.js hover handlers after apps.js re-binds
+        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+
+        // 3. One-time bindings on document — never duplicate across navigations
+        if (!window.__sidebarInit) {
+            window.__sidebarInit = true;
+
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.collapseSidebar')) {
+                    setTimeout(function () {
+                        var v = document.querySelector('.vertical');
+                        sessionStorage.setItem(KEY, (v && v.classList.contains('collapsed')) ? '1' : '0');
+                    }, 50);
+                }
+            });
+
+            document.addEventListener('livewire:navigated', function () {
+                if (sessionStorage.getItem(KEY) === '1') {
+                    var v = document.querySelector('.vertical');
+                    if (v) v.classList.add('collapsed');
+                }
+                setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+            });
+        }
     })(jQuery);
     </script>
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-    // Associate sidebar toggle — works on mobile when apps.js collapseSidebar class is present
-    (function() {
-        function initSidebarToggle() {
-            document.querySelectorAll('.collapseSidebar').forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    var sidebar = document.getElementById('leftSidebar');
-                    var wrapper = document.querySelector('.wrapper');
-                    if (sidebar)  sidebar.classList.toggle('sidebar-open');
-                    if (wrapper)  wrapper.classList.toggle('sidebar-collapsed');
-                });
-            });
-        }
-        document.addEventListener('livewire:navigated', initSidebarToggle);
-        initSidebarToggle();
-    })();
-    </script>
     @livewireScripts
     @include('components.confirm-modal')
   </body>

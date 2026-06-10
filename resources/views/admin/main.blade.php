@@ -42,15 +42,49 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // apps.js binds mouseenter/mouseleave on .sidebar-left to expand it on hover.
-    // CSS already locks the size, but we also strip the handlers so .hover class
-    // is never added (prevents topnav margin flash). Must re-run after Livewire navigate.
-    (function($) {
-        function stripSidebarHover() {
-            setTimeout(function() { $(".sidebar-left").off("mouseenter mouseleave"); }, 0);
+    // ── Sidebar state management ────────────────────────────────────────────
+    // Livewire morphdom resets <body class="vertical light"> on every navigate,
+    // wiping the "collapsed" class. We persist state in sessionStorage and
+    // restore it synchronously each time this script re-executes (after morphdom,
+    // before paint). One-time DOM listeners use window.__sidebarInit so they
+    // never accumulate across navigations.
+    (function ($) {
+        var KEY = 'sidebar_collapsed';
+
+        // 1. Restore collapsed state IMMEDIATELY (synchronous — no setTimeout)
+        //    This runs after morphdom but before browser paint, so no flash.
+        if (sessionStorage.getItem(KEY) === '1') {
+            var v = document.querySelector('.vertical');
+            if (v) v.classList.add('collapsed');
         }
-        $(stripSidebarHover);
-        document.addEventListener('livewire:navigated', stripSidebarHover);
+
+        // 2. Strip apps.js hover handlers on this execution (setTimeout(0) runs
+        //    after apps.js re-binds, which is synchronous above).
+        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+
+        // 3. One-time bindings on document — survive all navigations, never duplicate.
+        if (!window.__sidebarInit) {
+            window.__sidebarInit = true;
+
+            // Persist state whenever the toggle is clicked
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.collapseSidebar')) {
+                    setTimeout(function () {
+                        var v = document.querySelector('.vertical');
+                        sessionStorage.setItem(KEY, (v && v.classList.contains('collapsed')) ? '1' : '0');
+                    }, 50);
+                }
+            });
+
+            // After each navigate: restore state + strip hover (belt-and-suspenders)
+            document.addEventListener('livewire:navigated', function () {
+                if (sessionStorage.getItem(KEY) === '1') {
+                    var v = document.querySelector('.vertical');
+                    if (v) v.classList.add('collapsed');
+                }
+                setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+            });
+        }
     })(jQuery);
     </script>
     <script src="{{ asset('assets/js/chart.v4.min.js') }}"></script>
