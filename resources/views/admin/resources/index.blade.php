@@ -49,11 +49,12 @@
                                 @csrf
                                 <button class="btn btn-success btn-sm"><i class="fe fe-check fe-12"></i> Approve</button>
                             </form>
-                            <form action="{{ route('e.resources.reject', $res->id) }}" method="POST" class="d-inline"
-                                  onsubmit="return confirm('Reject and delete this resource?')">
-                                @csrf
-                                <button class="btn btn-danger btn-sm"><i class="fe fe-x fe-12"></i> Reject</button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete"
+                                    data-action="{{ route('e.resources.reject', $res->id) }}"
+                                    data-name="{{ $res->name }}"
+                                    data-label="Reject">
+                                <i class="fe fe-x fe-12"></i> Reject
+                            </button>
                         </td>
                     </tr>
                     @endforeach
@@ -65,9 +66,9 @@
 
     <div class="d-flex justify-content-between align-items-center my-4">
         <h4 class="mb-0"><i class="fe fe-folder fe-16 mr-2"></i> Resources</h4>
-        <button class="btn btn-primary" data-toggle="modal" data-target="#uploadModal">
+        <a href="{{ route('e.resources.create') }}" wire:navigate class="btn btn-primary">
             <i class="fe fe-upload fe-16 mr-1"></i> Upload Resource
-        </button>
+        </a>
     </div>
 
     @forelse(['Tax', 'Audit', 'Advisory', 'Corporate'] as $cat)
@@ -113,11 +114,13 @@
                                 <a href="{{ route('e.resources.edit', $res->id) }}" wire:navigate class="btn btn-warning btn-sm">
                                     <i class="fe fe-edit-2 fe-12"></i>
                                 </a>
-                                <form action="{{ route('e.resources.destroy', $res->id) }}" method="POST" class="d-inline"
-                                      onsubmit="return confirm('Delete this resource?')">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm"><i class="fe fe-trash-2 fe-12"></i></button>
-                                </form>
+                                <button type="button" class="btn btn-danger btn-sm btn-delete"
+                                        data-action="{{ route('e.resources.destroy', $res->id) }}"
+                                        data-method="DELETE"
+                                        data-name="{{ $res->name }}"
+                                        data-label="Delete">
+                                    <i class="fe fe-trash-2 fe-12"></i>
+                                </button>
                             </td>
                         </tr>
                         @endforeach
@@ -140,59 +143,28 @@
 
 </div>
 
-{{-- Upload Modal --}}
-<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+{{-- Delete / Reject Confirmation Modal --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fe fe-upload fe-16 mr-2"></i> Upload Resource</h5>
+            <div class="modal-header border-0 pb-0">
+                <h6 class="modal-title font-weight-bold text-danger">
+                    <i class="fe fe-alert-triangle fe-16 mr-1"></i>
+                    <span id="deleteModalTitle">Confirm</span>
+                </h6>
                 <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
             </div>
-            <form id="adminUploadForm" action="{{ route('e.resources.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <div id="adminUploadErrors" class="alert alert-danger d-none"></div>
-
-                    <div class="form-group">
-                        <label><strong>Name</strong></label>
-                        <input type="text" name="name" class="form-control" placeholder="e.g. Income Tax Return Format 2025" required>
-                    </div>
-                    <div class="form-group">
-                        <label><strong>Category</strong></label>
-                        <select name="category" class="form-control" required>
-                            <option value="">-- Select --</option>
-                            @foreach(['Tax','Audit','Advisory','Corporate'] as $cat)
-                                <option value="{{ $cat }}">{{ $cat }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label><strong>Description</strong> <small class="text-muted">(optional)</small></label>
-                        <textarea name="description" rows="2" class="form-control" placeholder="Brief note..."></textarea>
-                    </div>
-                    <div class="form-group mb-2">
-                        <label><strong>File</strong></label>
-                        <input type="file" name="file" id="adminFileInput" class="form-control-file" required>
-                    </div>
-
-                    {{-- Progress bar (hidden until upload starts) --}}
-                    <div id="adminProgress" style="display:none; margin-top:12px;">
-                        <div style="display:flex; justify-content:space-between; font-size:12px; color:#6c757d; margin-bottom:4px;">
-                            <span>Uploading...</span>
-                            <span id="adminProgressPct">0%</span>
-                        </div>
-                        <div style="height:8px; background:#e9ecef; border-radius:4px; overflow:hidden;">
-                            <div id="adminProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#4dabf7,#228be6); border-radius:4px; transition:width .15s;"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" id="adminSubmitBtn" class="btn btn-primary">
-                        <i class="fe fe-upload fe-14 mr-1"></i> Upload
-                    </button>
-                </div>
-            </form>
+            <div class="modal-body pt-2">
+                <p class="mb-0 text-muted" id="deleteModalBody">Are you sure?</p>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                <form id="deleteModalForm" method="POST" class="d-inline">
+                    @csrf
+                    <input type="hidden" name="_method" id="deleteModalMethod" value="DELETE">
+                    <button type="submit" class="btn btn-danger btn-sm" id="deleteModalBtn">Delete</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -201,41 +173,21 @@
 
 @section('scripts')
 <script>
-document.getElementById('adminUploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var form = this;
-    var bar  = document.getElementById('adminProgressBar');
-    var pct  = document.getElementById('adminProgressPct');
-    var btn  = document.getElementById('adminSubmitBtn');
+document.querySelectorAll('.btn-delete').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var label  = this.dataset.label || 'Delete';
+        var name   = this.dataset.name || 'this item';
+        var action = this.dataset.action;
+        var method = this.dataset.method || 'POST';
 
-    document.getElementById('adminProgress').style.display = 'block';
-    document.getElementById('adminUploadErrors').classList.add('d-none');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
+        document.getElementById('deleteModalTitle').textContent = label;
+        document.getElementById('deleteModalBody').textContent  = label + ' "' + name + '"? This cannot be undone.';
+        document.getElementById('deleteModalBtn').textContent   = label;
+        document.getElementById('deleteModalForm').action       = action;
+        document.getElementById('deleteModalMethod').value      = method;
 
-    var xhr = new XMLHttpRequest();
-
-    xhr.upload.onprogress = function(e) {
-        if (e.lengthComputable) {
-            var p = Math.round(e.loaded / e.total * 100);
-            bar.style.width = p + '%';
-            pct.textContent = p + '%';
-        }
-    };
-
-    xhr.onload = function() {
-        window.location.href = xhr.responseURL;
-    };
-
-    xhr.onerror = function() {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fe fe-upload fe-14 mr-1"></i> Upload';
-        document.getElementById('adminProgress').style.display = 'none';
-        alert('Upload failed. Please try again.');
-    };
-
-    xhr.open('POST', form.action);
-    xhr.send(new FormData(form));
+        jQuery('#deleteModal').modal('show');
+    });
 });
 </script>
 @endsection
