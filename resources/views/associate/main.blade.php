@@ -44,10 +44,15 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // apps.js adds .hover on sidebar mouseenter (expands collapsed sidebar on hover).
-    // We disable that — collapsed stays icon-only, no hover expansion.
+    // apps.js binds mouseenter/mouseleave on .sidebar-left to expand it on hover.
+    // CSS already locks the size, but we also strip the handlers so .hover class
+    // is never added (prevents topnav margin flash). Must re-run after Livewire navigate.
     (function($) {
-        $(function() { $(".sidebar-left").off("mouseenter mouseleave"); });
+        function stripSidebarHover() {
+            setTimeout(function() { $(".sidebar-left").off("mouseenter mouseleave"); }, 0);
+        }
+        $(stripSidebarHover);
+        document.addEventListener('livewire:navigated', stripSidebarHover);
     })(jQuery);
     </script>
     <!-- Select2 JS -->

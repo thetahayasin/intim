@@ -198,7 +198,21 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 .sidebar-left .nav-item .nav-link.side-select .fe,
 .sidebar-left .nav-item .nav-link:hover .fe { color: #ffffff; }
 
-/* Collapsed sidebar: center icons, hide logo/brand */
+/* ── Collapsed sidebar: icon-only, centered, no hover expansion ───────────── */
+
+/* Lock sidebar at 5rem even if apps.js adds .hover class */
+.vertical.collapsed .sidebar-left,
+.vertical.collapsed.hover .sidebar-left {
+  min-width: 5rem !important;
+  width: 5rem !important;
+}
+/* Lock topnav/main at 5rem when collapsed (with or without .hover) */
+.vertical.collapsed.hover .topnav,
+.vertical.collapsed.hover .main-content {
+  margin-left: 5rem !important;
+}
+
+/* Center icons, strip horizontal padding */
 .vertical.collapsed .sidebar-left .nav-item .nav-link {
   padding: 14px 0 !important;
   justify-content: center;
@@ -207,6 +221,8 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 .vertical.collapsed .sidebar-left .nav-item .nav-link.side-select {
   border-left: 3px solid var(--cds-interactive) !important;
 }
+
+/* Hide logo brand and nav headings in collapsed state */
 .vertical.collapsed .sidebar-left .navbar-brand {
   display: none !important;
 }
