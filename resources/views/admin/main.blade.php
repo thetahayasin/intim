@@ -42,31 +42,31 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // ── Sidebar state management ────────────────────────────────────────────
-    // Livewire morphdom resets <body class="vertical light"> on every navigate,
-    // wiping the "collapsed" class. We persist state in sessionStorage and
-    // restore it synchronously each time this script re-executes (after morphdom,
-    // before paint). One-time DOM listeners use window.__sidebarInit so they
-    // never accumulate across navigations.
+    // ── Sidebar state management ─────────────────────────────────────────────
+    // Problem: Livewire morphdom resets <body class="vertical light"> on every
+    // navigate, wiping "collapsed" — browser can paint the expanded state before
+    // our script re-executes.
+    // Fix: MutationObserver on body fires in the microtask queue BEFORE any paint,
+    // so it restores "collapsed" the instant morphdom removes it — zero flash.
     (function ($) {
         var KEY = 'sidebar_collapsed';
 
-        // 1. Restore collapsed state IMMEDIATELY (synchronous — no setTimeout)
-        //    This runs after morphdom but before browser paint, so no flash.
-        if (sessionStorage.getItem(KEY) === '1') {
-            var v = document.querySelector('.vertical');
-            if (v) v.classList.add('collapsed');
-        }
-
-        // 2. Strip apps.js hover handlers on this execution (setTimeout(0) runs
-        //    after apps.js re-binds, which is synchronous above).
-        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
-
-        // 3. One-time bindings on document — survive all navigations, never duplicate.
+        // 1. One-time setup (persists across all navigations)
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
 
-            // Persist state whenever the toggle is clicked
+            // MutationObserver: restore collapsed the moment morphdom strips the class
+            var observer = new MutationObserver(function () {
+                if (sessionStorage.getItem(KEY) === '1') {
+                    var v = document.querySelector('.vertical');
+                    if (v && !v.classList.contains('collapsed')) {
+                        v.classList.add('collapsed');
+                    }
+                }
+            });
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+            // Persist state when toggle is clicked
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
                     setTimeout(function () {
@@ -76,14 +76,19 @@
                 }
             });
 
-            // After each navigate: restore state + strip hover (belt-and-suspenders)
+            // Strip hover handlers after every navigate
             document.addEventListener('livewire:navigated', function () {
-                if (sessionStorage.getItem(KEY) === '1') {
-                    var v = document.querySelector('.vertical');
-                    if (v) v.classList.add('collapsed');
-                }
                 setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
             });
+        }
+
+        // 2. Strip hover on this execution (covers initial load + navigate re-exec)
+        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+
+        // 3. Apply saved state on initial load
+        if (sessionStorage.getItem(KEY) === '1') {
+            var v = document.querySelector('.vertical');
+            if (v) v.classList.add('collapsed');
         }
     })(jQuery);
     </script>

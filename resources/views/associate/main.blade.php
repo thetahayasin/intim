@@ -44,22 +44,23 @@
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // ── Sidebar state management ────────────────────────────────────────────
+    // ── Sidebar state management ─────────────────────────────────────────────
     (function ($) {
         var KEY = 'sidebar_collapsed';
 
-        // 1. Restore collapsed state IMMEDIATELY (synchronous — no setTimeout)
-        if (sessionStorage.getItem(KEY) === '1') {
-            var v = document.querySelector('.vertical');
-            if (v) v.classList.add('collapsed');
-        }
-
-        // 2. Strip apps.js hover handlers after apps.js re-binds
-        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
-
-        // 3. One-time bindings on document — never duplicate across navigations
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
+
+            // MutationObserver restores collapsed the instant morphdom strips the class
+            var observer = new MutationObserver(function () {
+                if (sessionStorage.getItem(KEY) === '1') {
+                    var v = document.querySelector('.vertical');
+                    if (v && !v.classList.contains('collapsed')) {
+                        v.classList.add('collapsed');
+                    }
+                }
+            });
+            observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
@@ -71,12 +72,15 @@
             });
 
             document.addEventListener('livewire:navigated', function () {
-                if (sessionStorage.getItem(KEY) === '1') {
-                    var v = document.querySelector('.vertical');
-                    if (v) v.classList.add('collapsed');
-                }
                 setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
             });
+        }
+
+        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+
+        if (sessionStorage.getItem(KEY) === '1') {
+            var v = document.querySelector('.vertical');
+            if (v) v.classList.add('collapsed');
         }
     })(jQuery);
     </script>
