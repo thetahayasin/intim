@@ -9,7 +9,7 @@
 
     {{-- Stats Row --}}
     <div class="row my-4">
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-2 mb-3">
             <div class="card text-center">
                 <div class="card-body py-3">
                     <small class="text-muted d-block">Total</small>
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-2 mb-3">
             <div class="card text-center">
                 <div class="card-body py-3">
                     <small class="text-muted d-block">Agreements</small>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-2 mb-3">
             <div class="card text-center">
                 <div class="card-body py-3">
                     <small class="text-muted d-block">Asif Associates</small>
@@ -33,7 +33,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
+        <div class="col-6 col-md-2 mb-3">
             <div class="card text-center">
                 <div class="card-body py-3">
                     <small class="text-muted d-block">HAMD</small>
@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-2 d-flex align-items-center">
+        <div class="col-12 col-md-2 mb-3 d-flex align-items-center">
             <a href="{{ route('e.documents.create') }}" wire:navigate class="btn btn-secondary btn-block">
                 <i class="fe fe-plus fe-16 mr-1"></i> New
             </a>

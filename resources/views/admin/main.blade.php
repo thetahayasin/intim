@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
   </head>
   <body class="vertical  light  ">
+    <span id="modeSwitcher" style="display:none;"></span>
     <div class="wrapper">
     @include('admin.includes.navbar')
     @include('admin.includes.sidebar')
@@ -40,48 +41,58 @@
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.stickOnScroll.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // ── Sidebar collapse ──────────────────────────────────────────────────────
-    // CSS is driven by html.sidebar-collapsed.
-    // State is stored as a COOKIE so PHP renders the correct html class on every
-    // request — including Livewire navigate XHR responses. Zero JS race condition.
     (function ($) {
         var html = document.documentElement;
+        var hoverObserver = null;
 
-        // Sync body .collapsed with the html class (php already set html class)
         function syncBodyClass() {
+            if (window.innerWidth < 992) return;
             var v = document.querySelector('.vertical');
             if (!v) return;
             if (html.classList.contains('sidebar-collapsed')) v.classList.add('collapsed');
             else v.classList.remove('collapsed');
         }
-        syncBodyClass();
 
-        // Strip apps.js hover handlers
-        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+        // Strip apps.js hover binding AND watch body with MutationObserver so
+        // any late-binding (async script re-injection after navigate) is caught too.
+        function preventHover() {
+            $('.sidebar-left').off('mouseenter mouseleave');
+            if (hoverObserver) { hoverObserver.disconnect(); hoverObserver = null; }
+            var v = document.querySelector('.vertical');
+            if (!v) return;
+            hoverObserver = new MutationObserver(function () {
+                if (v.classList.contains('hover')) v.classList.remove('hover');
+            });
+            hoverObserver.observe(v, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        syncBodyClass();
+        setTimeout(preventHover, 0);
 
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
 
-            // When toggle clicked: update html class + cookie
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
                     setTimeout(function () {
                         var v = document.querySelector('.vertical');
                         var isCollapsed = v && v.classList.contains('collapsed');
-                        html.classList.toggle('sidebar-collapsed', isCollapsed);
-                        document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
-                                          '; path=/; SameSite=Strict; max-age=31536000';
+                        if (window.innerWidth >= 992) {
+                            html.classList.toggle('sidebar-collapsed', isCollapsed);
+                            document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
+                                              '; path=/; SameSite=Strict; max-age=31536000';
+                        }
                     }, 50);
                 }
             });
 
-            // After navigate: html class is already correct (server rendered it);
-            // just sync body and strip hover
             document.addEventListener('livewire:navigated', function () {
                 syncBodyClass();
-                setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+                // Re-observe new body element — old observer references the discarded body
+                setTimeout(preventHover, 0);
             });
         }
     })(jQuery);

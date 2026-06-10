@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
   </head>
   <body class="vertical  light  ">
+    <span id="modeSwitcher" style="display:none;"></span>
     <div class="wrapper">
     @include('associate.includes.navbar')
     @include('associate.includes.sidebar')
@@ -42,21 +43,34 @@
     <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
     @yield('scripts')
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.stickOnScroll.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
-    // ── Sidebar collapse ──────────────────────────────────────────────────────
     (function ($) {
         var html = document.documentElement;
+        var hoverObserver = null;
 
         function syncBodyClass() {
+            if (window.innerWidth < 992) return;
             var v = document.querySelector('.vertical');
             if (!v) return;
             if (html.classList.contains('sidebar-collapsed')) v.classList.add('collapsed');
             else v.classList.remove('collapsed');
         }
-        syncBodyClass();
 
-        setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+        function preventHover() {
+            $('.sidebar-left').off('mouseenter mouseleave');
+            if (hoverObserver) { hoverObserver.disconnect(); hoverObserver = null; }
+            var v = document.querySelector('.vertical');
+            if (!v) return;
+            hoverObserver = new MutationObserver(function () {
+                if (v.classList.contains('hover')) v.classList.remove('hover');
+            });
+            hoverObserver.observe(v, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        syncBodyClass();
+        setTimeout(preventHover, 0);
 
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
@@ -66,16 +80,18 @@
                     setTimeout(function () {
                         var v = document.querySelector('.vertical');
                         var isCollapsed = v && v.classList.contains('collapsed');
-                        html.classList.toggle('sidebar-collapsed', isCollapsed);
-                        document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
-                                          '; path=/; SameSite=Strict; max-age=31536000';
+                        if (window.innerWidth >= 992) {
+                            html.classList.toggle('sidebar-collapsed', isCollapsed);
+                            document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
+                                              '; path=/; SameSite=Strict; max-age=31536000';
+                        }
                     }, 50);
                 }
             });
 
             document.addEventListener('livewire:navigated', function () {
                 syncBodyClass();
-                setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
+                setTimeout(preventHover, 0);
             });
         }
     })(jQuery);

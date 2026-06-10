@@ -4,9 +4,14 @@
   </a>
   <nav class="vertnav navbar navbar-light">
     <!-- nav bar -->
-    <div class="w-100 mb-4 d-flex">
+    <div class="sidebar-logo-full w-100 mb-4 d-flex">
       <a wire:navigate class="navbar-brand mx-auto mt-2 flex-fill text-center" href="{{ route('e.dash') }}">
         <img class="aalogo logo-side" src="{{ asset(\App\Models\Setting::get('site_logo', 'assets/img/logo-mini.png')) }}" alt="Asif Associates Logo">
+      </a>
+    </div>
+    <div class="sidebar-mini-brand">
+      <a wire:navigate href="{{ route('e.dash') }}">
+        <img src="{{ asset(\App\Models\Setting::get('site_logo', 'assets/img/logo-mini.png')) }}" alt="">
       </a>
     </div>
     <ul class="navbar-nav flex-fill w-100 mb-2">

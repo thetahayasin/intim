@@ -70,22 +70,29 @@
             .no-print { display: none !important; }
             .page { padding: 24px 36px; }
         }
+        @media (max-width: 600px) {
+            .doc-toolbar { flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+            .doc-toolbar-title { font-size: 12px !important; }
+            .doc-toolbar-actions { display: flex !important; flex-direction: column !important; gap: 6px !important; width: 100%; }
+            .doc-toolbar-actions a,
+            .doc-toolbar-actions button { width: 100% !important; text-align: center !important; box-sizing: border-box !important; }
+        }
     </style>
 </head>
 <body>
 
-<div class="no-print" style="display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:#161616;border-bottom:1px solid #393939;">
-    <span style="font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;color:#8d8d8d;letter-spacing:0.5px;">
+<div class="no-print doc-toolbar" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#161616;border-bottom:1px solid #393939;">
+    <span class="doc-toolbar-title" style="font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;color:#8d8d8d;letter-spacing:0.5px;">
         {{ $doc->client_name }} &nbsp;—&nbsp; {{ $doc->created_at->format('d M Y') }}
     </span>
-    <div style="display:flex;gap:8px;">
+    <div class="doc-toolbar-actions" style="display:flex;gap:8px;">
         <button onclick="window.print()" style="background:#f4f4f4;color:#161616;border:none;padding:7px 18px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
             Print / Save PDF
         </button>
-        <a href="{{ route('e.documents.edit', $doc->id) }}" style="background:#393939;color:#f4f4f4;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
+        <a href="{{ route('e.documents.edit', $doc->id) }}" style="background:#393939;color:#f4f4f4;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;display:inline-block;">
             Edit
         </a>
-        <a href="{{ route('e.documents') }}" style="background:transparent;color:#8d8d8d;border:1px solid #525252;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
+        <a href="{{ route('e.documents') }}" style="background:transparent;color:#8d8d8d;border:1px solid #525252;padding:7px 18px;font-weight:600;text-decoration:none;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;display:inline-block;">
             &larr; Back
         </a>
     </div>

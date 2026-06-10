@@ -159,6 +159,28 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
   width: 100%;
 }
 
+/* Mini brand: hidden by default, shown in desktop collapsed mode via media query */
+.sidebar-left .sidebar-mini-brand {
+  display: none;
+}
+.sidebar-left .sidebar-mini-brand img {
+  height: 28px;
+  width: 28px;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+/* Mobile close button (X) inside the open sidebar drawer */
+.sidebar-left .toggle-btn.collapseSidebar {
+  color: #c6c6c6 !important;
+  font-size: 20px;
+  line-height: 1;
+  padding: 4px 8px !important;
+  background: none !important;
+  border: none !important;
+}
+.sidebar-left .toggle-btn.collapseSidebar:hover { color: #ffffff !important; }
+
 .sidebar-left .nav-heading {
   color: #6f6f6f !important;
   font-size: 11px !important;
@@ -198,43 +220,104 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
 .sidebar-left .nav-item .nav-link.side-select .fe,
 .sidebar-left .nav-item .nav-link:hover .fe { color: #ffffff; }
 
-/* ── Collapsed sidebar ────────────────────────────────────────────────────────
-   Driven by html.sidebar-collapsed — Livewire morphdom never touches <html>,
-   so this class survives every wire:navigate with zero flinch.
-   .vertical.collapsed rules are kept as fallback for apps.js compat.
+/* ── Kill transitions on sidebar/content elements ─────────────────────────────
+   app-light.css sets transition:all .5s on .main-content and transition:width
+   .3s on .sidebar-left. When Livewire replaces <body> via replaceWith(), the
+   browser sees freshly-inserted elements and can fire those transitions even
+   though the final computed value is unchanged — causing a visible flinch.
+   Disabling here is safe because Carbon uses no sidebar animation.
    ─────────────────────────────────────────────────────────────────────────── */
-
-html.sidebar-collapsed .sidebar-left {
-  min-width: 5rem !important;
-  width: 5rem !important;
-  overflow: hidden !important;
-  transition: none !important;
-}
-html.sidebar-collapsed .topnav,
-html.sidebar-collapsed .main-content {
-  margin-left: 5rem !important;
+.sidebar-left,
+.main-content,
+.topnav {
   transition: none !important;
 }
 
-/* Hide text, headings, brand — even when apps.js adds .hover to body */
-html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a > span,
-html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a .item-text,
-html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a.dropdown-toggle::after,
-html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > ul.show,
-html.sidebar-collapsed .sidebar-left .nav-heading,
-html.sidebar-collapsed .sidebar-left .btn-box,
-html.sidebar-collapsed .sidebar-left .navbar-brand {
-  display: none !important;
+/* ── Collapsed sidebar (desktop only) ────────────────────────────────────────
+   Driven by html.sidebar-collapsed on <html> — Livewire never replaces <html>
+   so this class survives every wire:navigate. Media query keeps mobile
+   unaffected; mobile sidebar is a full-width drawer handled by apps.js.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (min-width: 992px) {
+  html.sidebar-collapsed .sidebar-left {
+    min-width: 5rem !important;
+    width: 5rem !important;
+    overflow: hidden !important;
+  }
+  html.sidebar-collapsed .topnav,
+  html.sidebar-collapsed .main-content {
+    margin-left: 5rem !important;
+  }
+
+  /* Explicit .hover override: apps.js adds .hover to body on mouseenter;
+     .vertical.hover .topnav specificity [0,3,0,0] > html.sidebar-collapsed .topnav [0,2,0,1]
+     when both !important — the higher-specificity same-importance rule wins.
+     Adding the .hover path explicitly at equal or higher specificity neutralises it. */
+  html.sidebar-collapsed body.vertical.hover .sidebar-left {
+    min-width: 5rem !important;
+    width: 5rem !important;
+    overflow: hidden !important;
+  }
+  html.sidebar-collapsed body.vertical.hover .topnav,
+  html.sidebar-collapsed body.vertical.hover .main-content {
+    margin-left: 5rem !important;
+  }
+
+  /* Hide text, headings, full brand — even when apps.js adds .hover to body */
+  html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a > span,
+  html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a .item-text,
+  html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > a.dropdown-toggle::after,
+  html.sidebar-collapsed .sidebar-left .navbar-nav > .nav-item > ul.show,
+  html.sidebar-collapsed .sidebar-left .nav-heading,
+  html.sidebar-collapsed .sidebar-left .btn-box,
+  html.sidebar-collapsed .sidebar-left .sidebar-logo-full {
+    display: none !important;
+  }
+
+  /* Show the mini icon brand in place of the full logo */
+  html.sidebar-collapsed .sidebar-left .sidebar-mini-brand {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 14px 0;
+  }
+
+  /* Center icons, strip horizontal padding */
+  html.sidebar-collapsed .sidebar-left .nav-item .nav-link {
+    padding: 14px 0 !important;
+    justify-content: center;
+    border-left: 3px solid transparent;
+  }
+  html.sidebar-collapsed .sidebar-left .nav-item .nav-link.side-select {
+    border-left: 3px solid var(--cds-interactive) !important;
+  }
 }
 
-/* Center icons, strip horizontal padding */
-html.sidebar-collapsed .sidebar-left .nav-item .nav-link {
-  padding: 14px 0 !important;
-  justify-content: center;
-  border-left: 3px solid transparent;
-}
-html.sidebar-collapsed .sidebar-left .nav-item .nav-link.side-select {
-  border-left: 3px solid var(--cds-interactive) !important;
+/* ── Mobile sidebar: full-overlay drawer ──────────────────────────────────────
+   app-light.css shifts topnav/main-content right by 16rem when sidebar opens
+   (.vertical.collapsed). On mobile we want an overlay drawer instead — sidebar
+   sits above content via position:fixed, topnav stays at full width (margin 0).
+   Also prevents apps.js hover expanding the hidden sidebar unexpectedly.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 991.98px) {
+  /* Drawer is an overlay — content does NOT shift when sidebar opens */
+  .vertical.collapsed .topnav,
+  .vertical.collapsed .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  /* Sidebar sits above everything including topnav */
+  .vertical.collapsed .sidebar-left {
+    z-index: 1060 !important;
+    position: fixed !important;
+  }
+  /* Prevent apps.js hover from ghost-expanding the hidden sidebar */
+  .vertical.hover:not(.collapsed) .sidebar-left {
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
 }
 
 .sidebar-left .btn-box .btn {
