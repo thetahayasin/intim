@@ -169,7 +169,7 @@
                                         <input type="text" name="reason_for_leave" class="form-control form-control-sm"
                                             value="{{ $row->reason_for_leave ?? '' }}" placeholder="Leave reason…">
                                     </div>
-                                    <div class="col-auto mb-2">
+                                    <div class="col-auto mb-2 att-workhours-group {{ $currentStatus !== 'present' ? 'd-none' : '' }}">
                                         <label class="small font-weight-bold d-block mb-1" style="white-space:nowrap;">Work Hours</label>
                                         <input type="number" name="work_hours" class="form-control form-control-sm"
                                             value="{{ $row->work_hours ?? '' }}" min="0" max="24" placeholder="—" style="width:105px;">
@@ -222,17 +222,20 @@
         setTimeout(function () { el.className = 'alert d-none mb-3'; }, 3000);
     }
 
-    function toggleLeaveFields(form, show) {
+    function syncStatusFields(form, status) {
         form.querySelectorAll('.att-leave-group').forEach(function (el) {
-            el.classList.toggle('d-none', !show);
+            el.classList.toggle('d-none', status !== 'leave');
+        });
+        form.querySelectorAll('.att-workhours-group').forEach(function (el) {
+            el.classList.toggle('d-none', status !== 'present');
         });
     }
 
-    // Status select change → show/hide leave-specific fields in real time
+    // Status select change → show/hide fields in real time
     document.addEventListener('change', function (e) {
         if (!e.target.matches('.att-status-select')) return;
         var form = e.target.closest('form.att-inline-form');
-        if (form) toggleLeaveFields(form, e.target.value === 'leave');
+        if (form) syncStatusFields(form, e.target.value);
     });
 
     // Edit button → open inline edit row
@@ -255,7 +258,7 @@
         form.querySelector('[name="leave_approval"]').value = btn.dataset.approval || '0';
         form.querySelector('[name="reason_for_leave"]').value = btn.dataset.reason || '';
         form.querySelector('[name="work_hours"]').value = btn.dataset.hours || '';
-        toggleLeaveFields(form, btn.dataset.status === 'leave');
+        syncStatusFields(form, btn.dataset.status);
         form.querySelector('.att-form-error').classList.add('d-none');
 
         editRow.classList.remove('d-none');
