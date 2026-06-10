@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @if(($_COOKIE['sidebar_collapsed'] ?? '0') === '1') class="sidebar-collapsed" @endif>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -43,50 +43,44 @@
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
     // ── Sidebar collapse ──────────────────────────────────────────────────────
-    // CSS is driven by html.sidebar-collapsed — Livewire morphdom never touches
-    // <html>, so the class (and layout) survives every wire:navigate with no flinch.
-    // apps.js still toggles .collapsed on <body> for its own logic; we mirror that.
+    // CSS is driven by html.sidebar-collapsed.
+    // State is stored as a COOKIE so PHP renders the correct html class on every
+    // request — including Livewire navigate XHR responses. Zero JS race condition.
     (function ($) {
-        var KEY = 'sidebar_collapsed';
         var html = document.documentElement;
 
-        // Apply saved state immediately (runs on load and on each navigate re-exec)
-        if (sessionStorage.getItem(KEY) === '1') {
-            html.classList.add('sidebar-collapsed');
+        // Sync body .collapsed with the html class (php already set html class)
+        function syncBodyClass() {
             var v = document.querySelector('.vertical');
-            if (v) v.classList.add('collapsed');
+            if (!v) return;
+            if (html.classList.contains('sidebar-collapsed')) v.classList.add('collapsed');
+            else v.classList.remove('collapsed');
         }
+        syncBodyClass();
 
-        // Strip apps.js hover handlers after they bind
+        // Strip apps.js hover handlers
         setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
 
-        // One-time bindings — never re-add across navigations
         if (!window.__sidebarInit) {
             window.__sidebarInit = true;
 
-            // Mirror apps.js toggle: sync html class + persist to sessionStorage
+            // When toggle clicked: update html class + cookie
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
                     setTimeout(function () {
-                        var isCollapsed = document.querySelector('.vertical') &&
-                                          document.querySelector('.vertical').classList.contains('collapsed');
-                        if (isCollapsed) {
-                            html.classList.add('sidebar-collapsed');
-                            sessionStorage.setItem(KEY, '1');
-                        } else {
-                            html.classList.remove('sidebar-collapsed');
-                            sessionStorage.setItem(KEY, '0');
-                        }
+                        var v = document.querySelector('.vertical');
+                        var isCollapsed = v && v.classList.contains('collapsed');
+                        html.classList.toggle('sidebar-collapsed', isCollapsed);
+                        document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
+                                          '; path=/; SameSite=Strict; max-age=31536000';
                     }, 50);
                 }
             });
 
-            // After navigate: re-apply body class (html class already survived morphdom)
+            // After navigate: html class is already correct (server rendered it);
+            // just sync body and strip hover
             document.addEventListener('livewire:navigated', function () {
-                if (sessionStorage.getItem(KEY) === '1') {
-                    var v = document.querySelector('.vertical');
-                    if (v) v.classList.add('collapsed');
-                }
+                syncBodyClass();
                 setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
             });
         }

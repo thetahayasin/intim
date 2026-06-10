@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" @if(($_COOKIE['sidebar_collapsed'] ?? '0') === '1') class="sidebar-collapsed" @endif>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -46,14 +46,15 @@
     <script>
     // ── Sidebar collapse ──────────────────────────────────────────────────────
     (function ($) {
-        var KEY = 'sidebar_collapsed';
         var html = document.documentElement;
 
-        if (sessionStorage.getItem(KEY) === '1') {
-            html.classList.add('sidebar-collapsed');
+        function syncBodyClass() {
             var v = document.querySelector('.vertical');
-            if (v) v.classList.add('collapsed');
+            if (!v) return;
+            if (html.classList.contains('sidebar-collapsed')) v.classList.add('collapsed');
+            else v.classList.remove('collapsed');
         }
+        syncBodyClass();
 
         setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
 
@@ -63,24 +64,17 @@
             document.addEventListener('click', function (e) {
                 if (e.target.closest('.collapseSidebar')) {
                     setTimeout(function () {
-                        var isCollapsed = document.querySelector('.vertical') &&
-                                          document.querySelector('.vertical').classList.contains('collapsed');
-                        if (isCollapsed) {
-                            html.classList.add('sidebar-collapsed');
-                            sessionStorage.setItem(KEY, '1');
-                        } else {
-                            html.classList.remove('sidebar-collapsed');
-                            sessionStorage.setItem(KEY, '0');
-                        }
+                        var v = document.querySelector('.vertical');
+                        var isCollapsed = v && v.classList.contains('collapsed');
+                        html.classList.toggle('sidebar-collapsed', isCollapsed);
+                        document.cookie = 'sidebar_collapsed=' + (isCollapsed ? '1' : '0') +
+                                          '; path=/; SameSite=Strict; max-age=31536000';
                     }, 50);
                 }
             });
 
             document.addEventListener('livewire:navigated', function () {
-                if (sessionStorage.getItem(KEY) === '1') {
-                    var v = document.querySelector('.vertical');
-                    if (v) v.classList.add('collapsed');
-                }
+                syncBodyClass();
                 setTimeout(function () { $('.sidebar-left').off('mouseenter mouseleave'); }, 0);
             });
         }
