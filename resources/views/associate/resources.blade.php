@@ -19,7 +19,7 @@
 
     {{-- Upload Form --}}
     <div class="collapse mb-4 {{ $errors->any() ? 'show' : '' }}" id="uploadForm">
-        <div class="card shadow border-left-primary" style="border-left: 4px solid #007bff;">
+        <div class="card shadow" style="border-left: 4px solid #007bff;">
             <div class="card-header"><strong><i class="fe fe-upload fe-14 mr-1"></i> Submit a Resource for Approval</strong></div>
             <div class="card-body">
                 @if($errors->any())
@@ -32,7 +32,9 @@
                     <div class="row">
                         <div class="col-md-4 form-group">
                             <label><strong>Name</strong></label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" placeholder="Resource name" required>
+                            <input type="text" name="name" value="{{ old('name') }}"
+                                   class="form-control @error('name') is-invalid @enderror"
+                                   placeholder="Resource name" required>
                             @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-3 form-group">
@@ -47,31 +49,26 @@
                         </div>
                         <div class="col-md-5 form-group">
                             <label><strong>Description</strong> <small class="text-muted">(optional)</small></label>
-                            <input type="text" name="description" value="{{ old('description') }}" class="form-control" placeholder="Brief description">
+                            <input type="text" name="description" value="{{ old('description') }}"
+                                   class="form-control" placeholder="Brief description">
                         </div>
                     </div>
-
-                    <div class="form-group mb-3">
+                    <div class="form-group">
                         <label><strong>File</strong></label>
-                        <div id="assDropZone" onclick="document.getElementById('assFileInput').click()"
-                             style="border:2px dashed #ced4da;border-radius:10px;padding:30px 24px;text-align:center;cursor:pointer;transition:all .2s;background:#fafafa;">
-                            <div id="assDropIcon" style="font-size:2.2rem;margin-bottom:8px;color:#adb5bd;">
-                                <i class="fe fe-upload-cloud"></i>
-                            </div>
-                            <div id="assDropLabel" style="font-weight:600;color:#495057;margin-bottom:4px;">
-                                Click or drag &amp; drop a file here
-                            </div>
-                            <div style="font-size:12px;color:#adb5bd;">Any file type &nbsp;•&nbsp; Max 20 MB</div>
-                            <div id="assFileInfo" style="display:none;margin-top:12px;">
-                                <span style="display:inline-flex;align-items:center;gap:8px;background:#e8f4fd;border:1px solid #bee3f8;border-radius:20px;padding:6px 14px;font-size:13px;color:#2d6a9f;font-weight:600;">
-                                    <i class="fe fe-file fe-12"></i>
-                                    <span id="assFileName"></span>
-                                    <span id="assFileSize" style="font-weight:400;color:#6c9ec9;"></span>
-                                </span>
-                            </div>
-                        </div>
-                        <input type="file" id="assFileInput" name="file" style="display:none" class="@error('file') is-invalid @enderror" required>
+                        <input type="file" name="file" id="assFileInput"
+                               class="form-control-file @error('file') is-invalid @enderror" required>
                         @error('file')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                    </div>
+
+                    {{-- Progress bar --}}
+                    <div id="assProgress" style="display:none; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:12px; color:#6c757d; margin-bottom:4px;">
+                            <span>Uploading...</span>
+                            <span id="assProgressPct">0%</span>
+                        </div>
+                        <div style="height:8px; background:#e9ecef; border-radius:4px; overflow:hidden;">
+                            <div id="assProgressBar" style="height:100%; width:0%; background:linear-gradient(90deg,#4dabf7,#228be6); border-radius:4px; transition:width .15s;"></div>
+                        </div>
                     </div>
 
                     <button type="submit" id="assSubmitBtn" class="btn btn-primary">
@@ -153,9 +150,8 @@
                                 <br><small class="text-muted">{{ $res->original_filename }}</small>
                             </td>
                             <td class="text-muted">{{ $res->description ?? '—' }}</td>
-                            <td class="text-nowrap">
-                                <a href="{{ route('ass.resources.download', $res->id) }}"
-                                   class="btn btn-primary btn-sm">
+                            <td>
+                                <a href="{{ route('ass.resources.download', $res->id) }}" class="btn btn-primary btn-sm">
                                     <i class="fe fe-download fe-12"></i> Download
                                 </a>
                             </td>
@@ -183,118 +179,43 @@
 
 @section('scripts')
 <script>
-    var dropZone  = document.getElementById('assDropZone');
+document.getElementById('assUploadForm').addEventListener('submit', function(e) {
     var fileInput = document.getElementById('assFileInput');
-    var fileInfo  = document.getElementById('assFileInfo');
-    var fileName  = document.getElementById('assFileName');
-    var fileSize  = document.getElementById('assFileSize');
-    var dropLabel = document.getElementById('assDropLabel');
-    var dropIcon  = document.getElementById('assDropIcon');
+    if (!fileInput.files[0]) return;
+    e.preventDefault();
 
-    if (dropZone) {
-        function formatBytes(b) {
-            if (b < 1024) return b + ' B';
-            if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-            return (b/1048576).toFixed(1) + ' MB';
+    var form = this;
+    var bar  = document.getElementById('assProgressBar');
+    var pct  = document.getElementById('assProgressPct');
+    var btn  = document.getElementById('assSubmitBtn');
+
+    document.getElementById('assProgress').style.display = 'block';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            var p = Math.round(e.loaded / e.total * 100);
+            bar.style.width = p + '%';
+            pct.textContent = p + '%';
         }
-        function showFile(file) {
-            fileName.textContent = file.name;
-            fileSize.textContent = '(' + formatBytes(file.size) + ')';
-            fileInfo.style.display = 'block';
-            dropLabel.textContent  = 'File selected';
-            dropIcon.innerHTML = '<i class="fe fe-check-circle" style="color:#28a745;"></i>';
-            dropZone.style.borderColor = '#28a745';
-            dropZone.style.background  = '#f0fff4';
-        }
-        fileInput.addEventListener('change', function() {
-            if (this.files[0]) showFile(this.files[0]);
-        });
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.style.borderColor = '#4dabf7';
-            this.style.background  = '#e8f4fd';
-        });
-        dropZone.addEventListener('dragleave', function() {
-            this.style.borderColor = '#ced4da';
-            this.style.background  = '#fafafa';
-        });
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.style.borderColor = '#ced4da';
-            this.style.background  = '#fafafa';
-            var file = e.dataTransfer.files[0];
-            if (file) {
-                var dt = new DataTransfer();
-                dt.items.add(file);
-                fileInput.files = dt.files;
-                showFile(file);
-            }
-        });
+    };
 
-        // XHR upload with progress
-        document.getElementById('assUploadForm').addEventListener('submit', function(e) {
-            if (!fileInput.files[0]) return;
-            e.preventDefault();
+    xhr.onload = function() {
+        window.location.href = xhr.responseURL;
+    };
 
-            var form       = this;
-            var submitBtn  = document.getElementById('assSubmitBtn');
+    xhr.onerror = function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fe fe-send fe-14 mr-1"></i> Submit for Approval';
+        document.getElementById('assProgress').style.display = 'none';
+        alert('Upload failed. Please try again.');
+    };
 
-            // Build progress UI
-            var progressWrap = document.getElementById('assProgressWrap');
-            if (!progressWrap) {
-                progressWrap = document.createElement('div');
-                progressWrap.id = 'assProgressWrap';
-                progressWrap.style.cssText = 'margin-top:12px;';
-                progressWrap.innerHTML =
-                    '<div style="display:flex;justify-content:space-between;font-size:12px;color:#6c757d;margin-bottom:4px;">' +
-                        '<span id="assProgressLabel">Uploading...</span>' +
-                        '<span id="assProgressPct">0%</span>' +
-                    '</div>' +
-                    '<div style="height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">' +
-                        '<div id="assProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4dabf7,#228be6);border-radius:4px;transition:width .1s;"></div>' +
-                    '</div>';
-                submitBtn.parentNode.insertBefore(progressWrap, submitBtn.nextSibling);
-            }
-
-            var progressBar   = document.getElementById('assProgressBar');
-            var progressPct   = document.getElementById('assProgressPct');
-            var progressLabel = document.getElementById('assProgressLabel');
-
-            progressWrap.style.display = 'block';
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
-
-            var xhr = new XMLHttpRequest();
-
-            xhr.upload.addEventListener('progress', function(e) {
-                if (e.lengthComputable) {
-                    var pct = Math.round(e.loaded / e.total * 100);
-                    progressBar.style.width = pct + '%';
-                    progressPct.textContent = pct + '%';
-                }
-            });
-
-            xhr.upload.addEventListener('load', function() {
-                progressBar.style.width = '100%';
-                progressPct.textContent = '100%';
-                progressLabel.textContent = 'Processing...';
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Processing...';
-            });
-
-            xhr.onload = function() {
-                window.location.href = xhr.responseURL;
-            };
-
-            xhr.onerror = function() {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fe fe-send fe-14 mr-1"></i> Submit for Approval';
-                progressWrap.style.display = 'none';
-                alert('Upload failed. Please try again.');
-            };
-
-            xhr.open('POST', form.action);
-            xhr.send(new FormData(form));
-        });
-    }
+    xhr.open('POST', form.action);
+    xhr.send(new FormData(form));
+});
 </script>
 @endsection
