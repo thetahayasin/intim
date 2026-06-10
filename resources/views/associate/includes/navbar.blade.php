@@ -1,6 +1,6 @@
 <nav class="topnav navbar navbar-expand">
-    <button type="button" class="navbar-toggler collapseSidebar" style="border:none;background:none;padding:0 8px 0 0;">
-        <i class="fe fe-menu fe-18" style="color:#c6c6c6;"></i>
+    <button type="button" class="navbar-toggler collapseSidebar" style="border:none;background:none;padding:0 8px 0 0;cursor:pointer;">
+        <i class="fe fe-menu fe-18" style="color:#525252;"></i>
     </button>
     <span class="navbar-brand-text">Asif Associates</span>
     <ul class="nav ml-auto">

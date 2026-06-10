@@ -152,50 +152,73 @@
                 $currentFavicon = $settings->get('site_favicon');
             @endphp
             <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-8">
                     <h6 class="mb-3" style="color:var(--cds-text-primary);font-weight:600;">Site Branding</h6>
+                    <p class="text-muted small mb-4">Logo appears in the sidebar and login page. Favicon appears as the browser tab icon.</p>
                     <form method="POST" action="{{ route('e.settings.branding') }}" enctype="multipart/form-data">
                         @csrf
 
-                        {{-- Logo --}}
+                        {{-- Logo Drop Zone --}}
                         <div class="mb-4">
-                            <label class="small text-muted mb-1 d-block">Sidebar Logo</label>
+                            <label class="small text-muted mb-2 d-block" style="font-weight:600;color:var(--cds-text-primary);">Logo</label>
                             @if($currentLogo)
-                            <div class="d-flex align-items-center mb-2" style="gap:12px;">
+                            <div class="d-flex align-items-center mb-3 p-3"
+                                 style="background:#f4f4f4;border:1px solid #e0e0e0;border-radius:4px;gap:12px;">
                                 <img src="{{ asset($currentLogo) }}" alt="Current Logo"
-                                     style="height:40px;width:auto;border:1px solid #e0e0e0;padding:4px;border-radius:4px;background:#f4f4f4;">
-                                <span class="small text-muted">Current logo</span>
+                                     style="height:36px;width:auto;max-width:120px;object-fit:contain;">
+                                <div class="flex-fill">
+                                    <span class="small d-block" style="color:var(--cds-text-primary);font-weight:500;">Current logo active</span>
+                                    <span class="small text-muted">Upload a new file below to replace it</span>
+                                </div>
                                 <button type="submit" name="delete_logo" value="1"
-                                        class="btn btn-sm btn-outline-secondary"
+                                        class="btn btn-sm btn-outline-secondary flex-shrink-0"
                                         data-confirm-delete="Remove the current logo and revert to default?">
-                                    <i class="fe fe-trash-2 fe-12"></i> Remove
+                                    <i class="fe fe-trash-2 fe-12 mr-1"></i>Remove
                                 </button>
                             </div>
                             @endif
-                            <input type="file" name="site_logo" class="form-control-file"
-                                   accept="image/png,image/jpeg,image/svg+xml,image/webp">
-                            <small class="text-muted">PNG, JPG, SVG or WebP · max 2 MB. Displayed at 40px height in sidebar.</small>
+                            <div id="logoDropZone"
+                                 style="border:2px dashed #c6c6c6;border-radius:4px;background:#f4f4f4;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;"
+                                 onclick="document.getElementById('logoFileInput').click()">
+                                <i class="fe fe-image fe-24" style="color:#8d8d8d;display:block;margin:0 auto 8px;"></i>
+                                <p id="logoDropText" class="mb-1 small" style="color:#525252;font-weight:500;">Drag &amp; drop or <u>click to browse</u></p>
+                                <p class="mb-0 small text-muted">PNG, JPG, SVG, WebP · max 2 MB</p>
+                            </div>
+                            <input type="file" id="logoFileInput" name="site_logo"
+                                   accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                                   style="display:none;">
                             @error('site_logo')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
 
-                        {{-- Favicon --}}
+                        {{-- Favicon Drop Zone --}}
                         <div class="mb-4">
-                            <label class="small text-muted mb-1 d-block">Favicon</label>
+                            <label class="small text-muted mb-2 d-block" style="font-weight:600;color:var(--cds-text-primary);">Favicon</label>
                             @if($currentFavicon)
-                            <div class="d-flex align-items-center mb-2" style="gap:12px;">
+                            <div class="d-flex align-items-center mb-3 p-3"
+                                 style="background:#f4f4f4;border:1px solid #e0e0e0;border-radius:4px;gap:12px;">
                                 <img src="{{ asset($currentFavicon) }}" alt="Current Favicon"
-                                     style="height:32px;width:32px;border:1px solid #e0e0e0;padding:4px;border-radius:4px;background:#f4f4f4;">
-                                <span class="small text-muted">Current favicon</span>
+                                     style="height:32px;width:32px;object-fit:contain;">
+                                <div class="flex-fill">
+                                    <span class="small d-block" style="color:var(--cds-text-primary);font-weight:500;">Current favicon active</span>
+                                    <span class="small text-muted">Upload a new file below to replace it</span>
+                                </div>
                                 <button type="submit" name="delete_favicon" value="1"
-                                        class="btn btn-sm btn-outline-secondary"
+                                        class="btn btn-sm btn-outline-secondary flex-shrink-0"
                                         data-confirm-delete="Remove the current favicon and revert to default?">
-                                    <i class="fe fe-trash-2 fe-12"></i> Remove
+                                    <i class="fe fe-trash-2 fe-12 mr-1"></i>Remove
                                 </button>
                             </div>
                             @endif
-                            <input type="file" name="site_favicon" class="form-control-file"
-                                   accept="image/png,image/jpeg,image/x-icon">
-                            <small class="text-muted">PNG, JPG or ICO · max 512 KB. Displayed as browser tab icon.</small>
+                            <div id="faviconDropZone"
+                                 style="border:2px dashed #c6c6c6;border-radius:4px;background:#f4f4f4;padding:28px 20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;"
+                                 onclick="document.getElementById('faviconFileInput').click()">
+                                <i class="fe fe-monitor fe-24" style="color:#8d8d8d;display:block;margin:0 auto 8px;"></i>
+                                <p id="faviconDropText" class="mb-1 small" style="color:#525252;font-weight:500;">Drag &amp; drop or <u>click to browse</u></p>
+                                <p class="mb-0 small text-muted">PNG, JPG, ICO · max 512 KB</p>
+                            </div>
+                            <input type="file" id="faviconFileInput" name="site_favicon"
+                                   accept="image/png,image/jpeg,image/x-icon"
+                                   style="display:none;">
                             @error('site_favicon')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                         </div>
 
@@ -203,6 +226,54 @@
                     </form>
                 </div>
             </div>
+
+            <script>
+            (function() {
+                function initBrandingZones() {
+                    function setupZone(zoneId, inputId, textId) {
+                        var zone  = document.getElementById(zoneId);
+                        var input = document.getElementById(inputId);
+                        var text  = document.getElementById(textId);
+                        if (!zone || !input) return;
+
+                        function showFile(file) {
+                            zone.style.borderColor = '#161616';
+                            zone.style.background  = '#e0e0e0';
+                            text.innerHTML = '<i class="fe fe-check-circle fe-16 mr-1" style="color:#161616;"></i>' +
+                                             '<strong>' + file.name + '</strong> <span class="text-muted">(' + (file.size/1024).toFixed(1) + ' KB)</span>';
+                        }
+
+                        input.addEventListener('change', function() {
+                            if (this.files[0]) showFile(this.files[0]);
+                        });
+
+                        zone.addEventListener('dragover', function(e) {
+                            e.preventDefault();
+                            this.style.borderColor = '#525252';
+                            this.style.background  = '#e8e8e8';
+                        });
+                        zone.addEventListener('dragleave', function() {
+                            this.style.borderColor = '#c6c6c6';
+                            this.style.background  = '#f4f4f4';
+                        });
+                        zone.addEventListener('drop', function(e) {
+                            e.preventDefault();
+                            var file = e.dataTransfer.files[0];
+                            if (!file) return;
+                            var dt = new DataTransfer();
+                            dt.items.add(file);
+                            input.files = dt.files;
+                            showFile(file);
+                        });
+                    }
+
+                    setupZone('logoDropZone',    'logoFileInput',    'logoDropText');
+                    setupZone('faviconDropZone', 'faviconFileInput', 'faviconDropText');
+                }
+                document.addEventListener('livewire:navigated', initBrandingZones);
+                initBrandingZones();
+            })();
+            </script>
             @endif
 
         </div>
