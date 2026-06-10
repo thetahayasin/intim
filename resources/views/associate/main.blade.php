@@ -11,19 +11,21 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/feather.css') }}">
     @yield('styles')
-
     <link rel="stylesheet" href="{{ asset('assets/css/app-light.css') }}" id="lightTheme">
     <link rel="stylesheet" href="{{ asset('assets/css/app-dark.css') }}" id="darkTheme" disabled>
-
     @livewireStyles
-    <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+    {{-- Core vendor scripts in <head> so Livewire navigate never re-executes them. --}}
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
+    <span id="modeSwitcher" style="display:none;"></span>
+    <script src="{{ asset('assets/js/config.js') }}"></script>
   </head>
   <body class="vertical  light  ">
-    <span id="modeSwitcher" style="display:none;"></span>
     <div class="wrapper">
     @include('associate.includes.navbar')
     @include('associate.includes.sidebar')
@@ -35,15 +37,9 @@
         </div>
     </main>
 
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
-    @yield('scripts')
-    <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.stickOnScroll.js') }}"></script>
+    @yield('scripts')
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
     (function ($) {
@@ -96,7 +92,6 @@
         }
     })(jQuery);
     </script>
-    <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @livewireScripts
     @include('components.confirm-modal')

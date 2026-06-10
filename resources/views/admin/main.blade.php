@@ -15,13 +15,20 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app-dark.css') }}" id="darkTheme" disabled>
     @livewireStyles
     @yield('styles')
-    <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+    {{-- Core vendor scripts in <head> so Livewire navigate never re-executes them.
+         Bootstrap binds dropdown handlers on document — re-execution stacks duplicate
+         handlers that cancel each other out, breaking dropdowns after navigate. --}}
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
+    <span id="modeSwitcher" style="display:none;"></span>
+    <script src="{{ asset('assets/js/config.js') }}"></script>
   </head>
   <body class="vertical  light  ">
-    <span id="modeSwitcher" style="display:none;"></span>
     <div class="wrapper">
     @include('admin.includes.navbar')
     @include('admin.includes.sidebar')
@@ -34,13 +41,7 @@
     </main>
     </div>
 
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
-    <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.stickOnScroll.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script>
@@ -56,8 +57,6 @@
             else v.classList.remove('collapsed');
         }
 
-        // Strip apps.js hover binding AND watch body with MutationObserver so
-        // any late-binding (async script re-injection after navigate) is caught too.
         function preventHover() {
             $('.sidebar-left').off('mouseenter mouseleave');
             if (hoverObserver) { hoverObserver.disconnect(); hoverObserver = null; }
@@ -91,14 +90,12 @@
 
             document.addEventListener('livewire:navigated', function () {
                 syncBodyClass();
-                // Re-observe new body element — old observer references the discarded body
                 setTimeout(preventHover, 0);
             });
         }
     })(jQuery);
     </script>
     <script src="{{ asset('assets/js/chart.v4.min.js') }}"></script>
-    <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @livewireScripts
     @yield('scripts')
