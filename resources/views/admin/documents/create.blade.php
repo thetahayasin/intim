@@ -139,7 +139,7 @@ function initAgreementSelect2() {
         width: '100%',
         placeholder: '-- Select or type client name --',
         tags: true,
-        allowClear: true
+        allowClear: false
     });
 }
 document.removeEventListener('livewire:navigated', initAgreementSelect2);
