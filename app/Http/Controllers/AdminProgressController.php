@@ -92,21 +92,24 @@ $publicHolidayList = empty($publicHolidays)
 $todayStr = $today->format('Y-m-d');
 
 // Step 7: Sum attendance per associate (same logic as associate side)
+// Only count from 2025-03-31 (system go-live) or associate's created_at, whichever is later
 $summaries = DB::table('attendances')
+    ->join('associates', 'attendances.associate_id', '=', 'associates.id')
     ->select(
-        'associate_id',
-        DB::raw('SUM(CASE WHEN is_present = 1 THEN 1 ELSE 0 END) as total_presents'),
-        DB::raw('SUM(CASE WHEN is_leave = 1 AND leave_approval = 1 THEN 1 ELSE 0 END) as total_leaves'),
+        'attendances.associate_id',
+        DB::raw('SUM(CASE WHEN attendances.is_present = 1 THEN 1 ELSE 0 END) as total_presents'),
+        DB::raw('SUM(CASE WHEN attendances.is_leave = 1 AND attendances.leave_approval = 1 THEN 1 ELSE 0 END) as total_leaves'),
         DB::raw("SUM(CASE
-            WHEN is_present = 0
-            AND is_leave = 0
-            AND DAYOFWEEK(date) NOT IN (1,7)
-            AND date NOT IN ($publicHolidayList)
-            AND date <= '$todayStr'
+            WHEN attendances.is_present = 0
+            AND attendances.is_leave = 0
+            AND DAYOFWEEK(attendances.date) NOT IN (1,7)
+            AND attendances.date NOT IN ($publicHolidayList)
+            AND attendances.date <= '$todayStr'
             THEN 1 ELSE 0 END) as total_absents")
     )
-    ->whereDate('date', '<=', $todayStr)
-    ->groupBy('associate_id')
+    ->whereRaw("attendances.date >= GREATEST(DATE(associates.created_at), '2025-03-31')")
+    ->whereDate('attendances.date', '<=', $todayStr)
+    ->groupBy('attendances.associate_id')
     ->get()
     ->keyBy('associate_id');
 
@@ -144,6 +147,10 @@ public function breakup($id)
         ? "'1970-01-01'"
         : implode(',', array_map(fn($d) => "'$d'", $publicHolidays));
 
+    $systemStart = '2025-03-31';
+    $joinDate    = substr($associate->created_at, 0, 10);
+    $effectiveStart = $joinDate > $systemStart ? $joinDate : $systemStart;
+
     $records = DB::table('attendances')
         ->select(
             DB::raw('YEAR(date) as year'),
@@ -161,6 +168,7 @@ public function breakup($id)
             DB::raw('SUM(work_hours) as total_work_hours')
         )
         ->where('associate_id', $id)
+        ->whereDate('date', '>=', $effectiveStart)
         ->whereDate('date', '<=', $currentDate)
         ->groupBy(DB::raw('YEAR(date)'), DB::raw('MONTH(date)'), DB::raw('MONTHNAME(date)'))
         ->orderByDesc('year')
