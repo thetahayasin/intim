@@ -15,5 +15,7 @@ class Resource extends Model
         'category',
         'file_path',
         'original_filename',
+        'uploaded_by',
+        'status',
     ];
 }

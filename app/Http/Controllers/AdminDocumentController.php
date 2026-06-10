@@ -83,6 +83,42 @@ class AdminDocumentController extends Controller
         return view($view, compact('doc'));
     }
 
+    public function edit($id)
+    {
+        $doc = Document::findOrFail($id);
+        $clients = Client::orderBy('name')->get();
+        return view('admin.documents.edit', compact('doc', 'clients'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'client_name'     => 'required|string|max:255',
+            'firm'            => 'required|in:0,1',
+            'services'        => 'required|array|min:1',
+            'services.*.name' => 'required|string|max:255',
+            'services.*.fee'  => 'nullable|string|max:255',
+            'start_date'      => 'nullable|date',
+            'end_date'        => 'nullable|date|after_or_equal:start_date',
+            'notes'           => 'nullable|string|max:2000',
+        ]);
+
+        $doc = Document::findOrFail($id);
+        $client = Client::where('name', $request->client_name)->first();
+
+        $doc->update([
+            'client_id'   => $client?->id,
+            'client_name' => $request->client_name,
+            'firm'        => $request->firm,
+            'services'    => $request->services,
+            'start_date'  => $request->start_date,
+            'end_date'    => $request->end_date,
+            'notes'       => $request->notes,
+        ]);
+
+        return redirect()->route('e.documents')->with('success', 'Agreement updated successfully.');
+    }
+
     public function destroy($id)
     {
         Document::findOrFail($id)->delete();

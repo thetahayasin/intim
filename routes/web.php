@@ -139,6 +139,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/e/resources/store', [AdminResourceController::class, 'store'])->name('e.resources.store');
     Route::get('/e/resources/{id}/edit', [AdminResourceController::class, 'edit'])->name('e.resources.edit');
     Route::post('/e/resources/{id}/update', [AdminResourceController::class, 'update'])->name('e.resources.update');
+    Route::post('/e/resources/{id}/approve', [AdminResourceController::class, 'approve'])->name('e.resources.approve');
+    Route::post('/e/resources/{id}/reject', [AdminResourceController::class, 'reject'])->name('e.resources.reject');
     Route::delete('/e/resources/{id}', [AdminResourceController::class, 'destroy'])->name('e.resources.destroy');
 
     // Documents (Proposals & Agreements)
@@ -146,6 +148,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/e/documents/create', [AdminDocumentController::class, 'create'])->name('e.documents.create');
     Route::post('/e/documents/store', [AdminDocumentController::class, 'store'])->name('e.documents.store');
     Route::get('/e/documents/view/{id}', [AdminDocumentController::class, 'view'])->name('e.documents.view');
+    Route::get('/e/documents/{id}/edit', [AdminDocumentController::class, 'edit'])->name('e.documents.edit');
+    Route::post('/e/documents/{id}/update', [AdminDocumentController::class, 'update'])->name('e.documents.update');
     Route::delete('/e/documents/{id}', [AdminDocumentController::class, 'destroy'])->name('e.documents.destroy');
 
 
@@ -207,6 +211,7 @@ Route::middleware(['auth.associate'])->group(function () {
     //resources
     Route::get('/a/resources', [AssociateResourceController::class, 'index'])->name('ass.resources');
     Route::get('/a/resources/download/{id}', [AssociateResourceController::class, 'download'])->name('ass.resources.download');
+    Route::post('/a/resources/upload', [AssociateResourceController::class, 'upload'])->name('ass.resources.upload');
 
     //get report
     Route::get('/a/report/{year}/{month}', [AssociateProgressController::class, 'downloadReport'])->name('ass.report');

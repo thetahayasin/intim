@@ -130,6 +130,10 @@
                                class="btn btn-success btn-sm" title="View / Print">
                                 <i class="fe fe-printer fe-12"></i>
                             </a>
+                            <a href="{{ route('e.documents.edit', $doc->id) }}" wire:navigate
+                               class="btn btn-warning btn-sm" title="Edit">
+                                <i class="fe fe-edit-2 fe-12"></i>
+                            </a>
                             <form action="{{ route('e.documents.destroy', $doc->id) }}" method="POST" class="d-inline"
                                   onsubmit="return confirm('Delete this document?')">
                                 @csrf @method('DELETE')

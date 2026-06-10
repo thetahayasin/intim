@@ -10,8 +10,10 @@ class AdminResourceController extends Controller
 {
     public function index()
     {
-        $resources = Resource::orderBy('category')->orderBy('name')->get()->groupBy('category');
-        return view('admin.resources.index', compact('resources'));
+        $resources = Resource::where('status', 'approved')
+            ->orderBy('category')->orderBy('name')->get()->groupBy('category');
+        $pending = Resource::where('status', 'pending')->orderByDesc('created_at')->get();
+        return view('admin.resources.index', compact('resources', 'pending'));
     }
 
     public function create()
@@ -72,6 +74,20 @@ class AdminResourceController extends Controller
         $resource->save();
 
         return redirect()->route('e.resources')->with('success', 'Resource updated.');
+    }
+
+    public function approve($id)
+    {
+        Resource::findOrFail($id)->update(['status' => 'approved']);
+        return redirect()->route('e.resources')->with('success', 'Resource approved.');
+    }
+
+    public function reject($id)
+    {
+        $resource = Resource::findOrFail($id);
+        Storage::disk('public')->delete($resource->file_path);
+        $resource->delete();
+        return redirect()->route('e.resources')->with('success', 'Resource rejected and removed.');
     }
 
     public function destroy($id)
