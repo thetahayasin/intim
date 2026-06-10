@@ -6,7 +6,7 @@
 <div class="col-lg-3 col-md-4 col-sm-9 col-11 mx-auto py-5">
     <div class="text-center mb-4">
         <img class="aalogo" src="{{ asset(\App\Models\Setting::get('site_logo', 'assets/img/logo-full.png')) }}"
-             alt="Asif Associates Logo" style="max-width:140px;height:auto;">
+             alt="Asif Associates Logo" style="max-width:100px;height:auto;">
     </div>
 
     {{-- Tab switcher --}}
