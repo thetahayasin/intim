@@ -614,7 +614,7 @@ select.form-control option { background-color: #ffffff; color: var(--cds-text-pr
 .pagination .page-item.active .page-link {
   background-color: var(--cds-interactive);
   border-color: var(--cds-interactive);
-  color: #161616;
+  color: #ffffff;
   font-weight: 600;
 }
 .pagination .page-link:hover {
