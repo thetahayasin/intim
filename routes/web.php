@@ -138,6 +138,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/associate/{id}/month/{year}/{month}',
         [AdminProgressController::class, 'monthDetails']
     )->name('e.month.details');
+    Route::post('/e/attendance/{id}/update-day',
+        [AdminProgressController::class, 'updateDayAttendance']
+    )->name('e.attendance.update.day');
 
     // Resources
     Route::get('/e/resources', [AdminResourceController::class, 'index'])->name('e.resources');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -185,11 +186,13 @@ public function monthDetails(int $id, int $year, int $month)
         ->join('associates', 'attendances.associate_id', '=', 'associates.id')
         ->leftJoin('public_holidays', 'attendances.date', '=', 'public_holidays.holiday_date')
         ->select(
+            'attendances.id',
             'attendances.date',
             'attendances.is_present',
             'attendances.is_leave',
             'attendances.leave_approval',
             'attendances.reason_for_leave',
+            'attendances.work_hours',
             'public_holidays.holiday_date',
             'public_holidays.description as holiday_description'
         )
@@ -198,7 +201,53 @@ public function monthDetails(int $id, int $year, int $month)
         ->orderBy('attendances.date')
         ->get();
 
-    return view('admin.month-details', compact('records'));
+    return view('admin.month-details', [
+        'records'     => $records,
+        'associateId' => $id,
+        'year'        => $year,
+        'month'       => $month,
+    ]);
+}
+
+public function updateDayAttendance(Request $request, int $id)
+{
+    $attendance = DB::table('attendances')->where('id', $id)->first();
+
+    if (!$attendance) {
+        return response()->json(['success' => false, 'message' => 'Record not found.'], 404);
+    }
+
+    $request->validate([
+        'status'           => 'required|in:present,absent,leave',
+        'leave_approval'   => 'nullable|in:0,1,2',
+        'reason_for_leave' => 'nullable|string|max:500',
+        'work_hours'       => 'nullable|integer|min:0|max:24',
+    ]);
+
+    $status        = $request->input('status');
+    $isPresent     = $status === 'present' ? 1 : 0;
+    $isLeave       = $status === 'leave'   ? 1 : 0;
+    $leaveApproval = $isLeave ? (int) $request->input('leave_approval', 0) : 0;
+    $reason        = $isLeave ? $request->input('reason_for_leave') : null;
+    $workHours     = $request->filled('work_hours') ? (int) $request->input('work_hours') : null;
+
+    DB::table('attendances')->where('id', $id)->update([
+        'is_present'       => $isPresent,
+        'is_leave'         => $isLeave,
+        'leave_approval'   => $leaveApproval,
+        'reason_for_leave' => $reason,
+        'work_hours'       => $workHours,
+        'updated_at'       => now(),
+    ]);
+
+    return response()->json([
+        'success'          => true,
+        'is_present'       => $isPresent,
+        'is_leave'         => $isLeave,
+        'leave_approval'   => $leaveApproval,
+        'reason_for_leave' => $reason,
+        'work_hours'       => $workHours,
+    ]);
 }
 
 
