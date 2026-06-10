@@ -1,4 +1,26 @@
-@if ($paginator->hasPages())
+@php
+    // In some Livewire 3 rendering contexts the presenter does not inject $elements.
+    // Rebuild from UrlWindow if missing; skip pagination entirely if $paginator is
+    // not a real paginator (e.g. an Eloquent Collection during component rehydration).
+    if (!isset($elements)) {
+        if (method_exists($paginator, 'elements')) {
+            $elements = $paginator->elements();
+        } elseif ($paginator instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator) {
+            $window = \Illuminate\Pagination\UrlWindow::make($paginator);
+            $elements = array_filter([
+                $window['first'],
+                is_array($window['slider']) ? '...' : null,
+                $window['slider'],
+                is_array($window['last']) ? '...' : null,
+                $window['last'],
+            ]);
+        } else {
+            $elements = [];
+        }
+    }
+@endphp
+
+@if ($paginator instanceof \Illuminate\Contracts\Pagination\Paginator && $paginator->hasPages())
     <nav>
         <ul class="pagination">
             {{-- Previous Page Link --}}
@@ -13,7 +35,7 @@
             @endif
 
             {{-- Pagination Elements --}}
-            @foreach (($elements ?? $paginator->elements()) as $element)
+            @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
                     <li class="page-item disabled" aria-disabled="true"><span class="page-link">{{ $element }}</span></li>
