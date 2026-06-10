@@ -3,7 +3,7 @@
     <!-- Session Status -->
     
 
-    <form class="col-lg-3 col-md-4 col-10 mx-auto text-center" method="POST" action="{{ route('login') }}">
+    <form class="col-xl-2 col-lg-3 col-md-4 col-10 mx-auto text-center" method="POST" action="{{ route('login') }}">
     @csrf
         <img class="aalogo" src="{{ asset('assets/img/logo-full.png') }}" alt="Asif Associates Logo">
     @include('components.message')
@@ -25,7 +25,7 @@
     <a class="forget-password mt-3" href="{{ route('password.request') }}">{{ __('Forgot Your Password?') }}</a>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
     <p class="mt-5 mb-3 text-muted">
-        Made with 🧠 by <span style="color:grey"><b>Taha Yasin</b></span>
+        Made with 🧠 by <span style="color:#161616"><b>Taha Yasin</b></span>
     </p>
 </form>
 </x-guest-layout>
