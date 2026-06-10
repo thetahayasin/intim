@@ -69,12 +69,12 @@
                 <input type="password" name="password" required autocomplete="current-password"
                        class="form-control form-control-lg" placeholder="Password">
             </div>
-            <div class="checkbox mb-3">
-                <label><input type="checkbox" name="remember"> Remember me</label>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="checkbox mb-0">
+                    <label><input type="checkbox" name="remember"> Remember me</label>
+                </div>
+                <a class="text-muted small" href="{{ route('password.request') }}">Forgot password?</a>
             </div>
-            <a class="d-block text-muted small mb-3" href="{{ route('password.request') }}">
-                Forgot password?
-            </a>
             <button class="btn btn-lg btn-secondary btn-block" type="submit">Login</button>
         </form>
     </div>
