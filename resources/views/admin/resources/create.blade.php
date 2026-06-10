@@ -154,8 +154,11 @@
         }
     });
 
-    document.getElementById('uploadForm').addEventListener('submit', function() {
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
         if (!fileInput.files[0]) return;
+        e.preventDefault();
+
+        var form        = this;
         var progressWrap = document.getElementById('progressWrap');
         var progressBar  = document.getElementById('progressBar');
         var progressPct  = document.getElementById('progressPct');
@@ -166,6 +169,7 @@
         submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
 
         var xhr = new XMLHttpRequest();
+
         xhr.upload.addEventListener('progress', function(e) {
             if (e.lengthComputable) {
                 var pct = Math.round(e.loaded / e.total * 100);
@@ -173,6 +177,26 @@
                 progressPct.textContent = pct + '%';
             }
         });
+
+        xhr.upload.addEventListener('load', function() {
+            progressBar.style.width = '100%';
+            progressPct.textContent = '100%';
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Processing...';
+        });
+
+        xhr.onload = function() {
+            window.location.href = xhr.responseURL;
+        };
+
+        xhr.onerror = function() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fe fe-upload fe-16 mr-1"></i> Upload';
+            progressWrap.style.display = 'none';
+            alert('Upload failed. Please try again.');
+        };
+
+        xhr.open('POST', form.action);
+        xhr.send(new FormData(form));
     });
 </script>
 @endsection

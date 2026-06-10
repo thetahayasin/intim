@@ -230,6 +230,71 @@
                 showFile(file);
             }
         });
+
+        // XHR upload with progress
+        document.getElementById('assUploadForm').addEventListener('submit', function(e) {
+            if (!fileInput.files[0]) return;
+            e.preventDefault();
+
+            var form       = this;
+            var submitBtn  = document.getElementById('assSubmitBtn');
+
+            // Build progress UI
+            var progressWrap = document.getElementById('assProgressWrap');
+            if (!progressWrap) {
+                progressWrap = document.createElement('div');
+                progressWrap.id = 'assProgressWrap';
+                progressWrap.style.cssText = 'margin-top:12px;';
+                progressWrap.innerHTML =
+                    '<div style="display:flex;justify-content:space-between;font-size:12px;color:#6c757d;margin-bottom:4px;">' +
+                        '<span id="assProgressLabel">Uploading...</span>' +
+                        '<span id="assProgressPct">0%</span>' +
+                    '</div>' +
+                    '<div style="height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">' +
+                        '<div id="assProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4dabf7,#228be6);border-radius:4px;transition:width .1s;"></div>' +
+                    '</div>';
+                submitBtn.parentNode.insertBefore(progressWrap, submitBtn.nextSibling);
+            }
+
+            var progressBar   = document.getElementById('assProgressBar');
+            var progressPct   = document.getElementById('assProgressPct');
+            var progressLabel = document.getElementById('assProgressLabel');
+
+            progressWrap.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    var pct = Math.round(e.loaded / e.total * 100);
+                    progressBar.style.width = pct + '%';
+                    progressPct.textContent = pct + '%';
+                }
+            });
+
+            xhr.upload.addEventListener('load', function() {
+                progressBar.style.width = '100%';
+                progressPct.textContent = '100%';
+                progressLabel.textContent = 'Processing...';
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Processing...';
+            });
+
+            xhr.onload = function() {
+                window.location.href = xhr.responseURL;
+            };
+
+            xhr.onerror = function() {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fe fe-send fe-14 mr-1"></i> Submit for Approval';
+                progressWrap.style.display = 'none';
+                alert('Upload failed. Please try again.');
+            };
+
+            xhr.open('POST', form.action);
+            xhr.send(new FormData(form));
+        });
     }
 </script>
 @endsection
