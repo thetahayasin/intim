@@ -43,6 +43,20 @@
     @yield('scripts')
     <script src="{{ asset('assets/js/config.js') }}"></script>
     <script src="{{ asset('assets/js/apps.js') }}"></script>
+    <script>
+    // apps.js unconditionally adds .hover on any sidebar mouseenter; override so it
+    // only fires when the sidebar is actually collapsed (preventing topnav position jumps)
+    (function($) {
+        $(function() {
+            $(".sidebar-left").off("mouseenter mouseleave");
+            $(".sidebar-left").on("mouseenter", function() {
+                if ($(".vertical").hasClass("collapsed")) $(".vertical").addClass("hover");
+            }).on("mouseleave", function() {
+                if ($(".vertical").hasClass("collapsed")) $(".vertical").removeClass("hover");
+            });
+        });
+    })(jQuery);
+    </script>
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>

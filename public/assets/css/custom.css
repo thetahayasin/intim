@@ -82,17 +82,21 @@ a:hover { color: var(--cds-text-secondary); text-decoration: none; }
   padding: 0 12px;
 }
 
-.topnav .navbar-toggler {
+/* Bootstrap .navbar-expand hides .navbar-toggler with display:none — force show ours */
+.topnav .navbar-toggler.collapseSidebar {
+  display: inline-flex !important;
+  align-items: center;
   color: #c6c6c6 !important;
-  padding: 0;
+  padding: 0 10px 0 0;
   border: none;
   background: none;
+  cursor: pointer;
 }
-.topnav .navbar-toggler-icon,
-.topnav .navbar-toggler .fe {
+.topnav .navbar-toggler.collapseSidebar .fe {
   color: #c6c6c6 !important;
+  transition: color .15s;
 }
-.topnav .navbar-toggler:hover .fe {
+.topnav .navbar-toggler.collapseSidebar:hover .fe {
   color: #ffffff !important;
 }
 
