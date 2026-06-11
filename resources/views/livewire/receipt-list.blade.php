@@ -4,9 +4,10 @@
         
         <div class="d-flex align-items-center ml-auto" style="gap: 8px;">
             <div class="input-group">
-                <input type="date" wire:model.live="startDate" class="form-control" style="max-width: 140px;">
-                <div class="input-group-append input-group-prepend"><span class="input-group-text">to</span></div>
-                <input type="date" wire:model.live="endDate" class="form-control" style="max-width: 140px;">
+                <div class="input-group-prepend"><span class="input-group-text text-muted" style="font-size:12px;letter-spacing:.5px;">FROM</span></div>
+                <input type="date" wire:model.live="startDate" class="form-control" style="min-width:150px;">
+                <div class="input-group-append input-group-prepend"><span class="input-group-text text-muted" style="font-size:12px;letter-spacing:.5px;">TO</span></div>
+                <input type="date" wire:model.live="endDate" class="form-control" style="min-width:150px;">
             </div>
             <div class="input-group" style="max-width: 250px;">
                 <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Search client receipts..." autocomplete="off">
