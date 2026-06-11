@@ -62,7 +62,7 @@
         .meta-table { margin: 0 auto 24px; width: 62%; border-collapse: collapse; }
         .meta-table td { padding: 7px 14px; border-bottom: 1px solid #e0d9cc; }
         .meta-table td:first-child { background: var(--firm-tint-bg); color: #999; letter-spacing: 2px; font-size: 10px; width: 38%; font-family: Arial, sans-serif; }
-        .meta-table td:last-child { color: var(--firm-accent-text); font-weight: bold; font-size: 15px; }
+        .meta-table td:last-child { color: var(--firm-accent-text); font-weight: bold; font-size: 22px; }
 
         .footer-addr { text-align: center; color: #777; font-size: 11px; border-top: 1px solid #ddd; padding-top: 10px; font-family: Arial, sans-serif; }
 
@@ -239,6 +239,12 @@
                     <li>Monthly sale tax return for all the Provinces, Federal, Gilgit Baltistan and Azad Kashmir.</li>
                     <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Income Tax Ordinance 2001.</li>
                     <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Sales Tax 1990.</li>
+                </ul>
+            </div>
+
+            <div class="svc-card">
+                <div class="svc-card-title">Others Taxation Services</div>
+                <ul>
                     <li>Any Letter impacting eligibility or continuity of exemption under section 100C.</li>
                     <li>Application for rectification and penalty waiver request where required.</li>
                     <li>To represent client before offices of FBR, KPRA, BRA, SRB and AJ&amp;K.</li>
@@ -246,9 +252,9 @@
                 </ul>
             </div>
 
-            <div class="svc-card">
+            <div class="svc-card" style="grid-column:1/-1;">
                 <div class="svc-card-title">Audit &amp; Assurance Services</div>
-                <ul>
+                <ul style="columns:2;column-gap:30px;">
                     <li>Statutory Audits.</li>
                     <li>Internal Audits.</li>
                     <li>Review Engagements.</li>
@@ -377,23 +383,24 @@
     <div class="sig-grid">
         <div>
             <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
-            <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
+            <div style="height:80px;margin-bottom:12px;border-bottom:1px solid #333;display:flex;align-items:flex-end;padding-bottom:6px;">
+                @if($doc->firm == 0)
+                    <img src="{{ asset('assets/img/sig-asif.jpg') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
+                @else
+                    <img src="{{ asset('assets/img/sig-hamd.png') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
+                @endif
+            </div>
             <div class="sig-name">Muhammad Asif Raza (FCA)</div>
             <div class="sig-role">Partner</div>
-            @if($doc->firm == 0)
-                <div class="sig-org">Asif Associates Chartered Accountants</div>
-            @else
-                <div class="sig-org">H.A.M.D &amp; Co Chartered Accountants</div>
-            @endif
-            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;{{ now()->format('d M Y') }}</div>
         </div>
 
         <div>
             <div class="sig-label">F O R &nbsp; T H E &nbsp; C L I E N T</div>
             <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
-            <div class="sig-name" style="color:var(--firm-accent-text);">{{ $doc->client_name }}</div>
-            <div class="sig-role">Authorized Signatory</div>
-            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+            <div class="sig-name">Name: &nbsp;<span class="sig-date-line" style="width:180px;"></span></div>
+            <div class="sig-role" style="margin-top:8px;">Designation: &nbsp;<span class="sig-date-line" style="width:140px;"></span></div>
+            <div class="sig-date" style="margin-top:10px;">Date: &nbsp;<span class="sig-date-line"></span></div>
         </div>
     </div>
 
