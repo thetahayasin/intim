@@ -8,13 +8,18 @@
         <i class="fe fe-arrow-left fe-16"></i> Back
     </a>
 
-    <div class="row">
-        <div class="col-md-10 my-4">
+    <div class="row my-2">
+
+        {{-- Left: Agreement Details --}}
+        <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
                     <strong class="card-title"><i class="fe fe-edit-2 fe-16 mr-1"></i> Edit Agreement — {{ $doc->client_name }}</strong>
                 </div>
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success py-2">{{ session('success') }}</div>
+                    @endif
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0">
@@ -27,7 +32,7 @@
                         @csrf
 
                         <div class="row">
-                            <div class="col-md-4 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
                                 <label>Client / Company Name</label>
                                 @php
                                     $selectedName = old('client_name', $doc->client_name);
@@ -46,7 +51,7 @@
                                 @error('client_name') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                             </div>
 
-                            <div class="col-md-4 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
                                 <label>Firm</label>
                                 <select name="firm" class="form-control @error('firm') is-invalid @enderror">
                                     <option value="">— Select Firm —</option>
@@ -58,13 +63,13 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
                                 <label>Start Date</label>
                                 <input type="date" name="start_date"
                                        value="{{ old('start_date', $doc->start_date?->format('Y-m-d')) }}"
                                        class="form-control">
                             </div>
-                            <div class="col-md-4 form-group mb-3">
+                            <div class="col-md-6 form-group mb-3">
                                 <label>End Date</label>
                                 <input type="date" name="end_date"
                                        value="{{ old('end_date', $doc->end_date?->format('Y-m-d')) }}"
@@ -86,11 +91,12 @@
                             @foreach($services as $i => $svc)
                             <div class="row service-row mb-2" data-index="{{ $i }}">
                                 <div class="col-md-7">
-                                    <input type="text" name="services[{{ $i }}][name]"
-                                           value="{{ $svc['name'] ?? '' }}"
-                                           class="form-control @error('services.'.$i.'.name') is-invalid @enderror"
-                                           placeholder="Service name e.g. Taxation Services">
-                                    @error('services.'.$i.'.name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    <select class="form-control svc-picker mb-1">
+                                        @include('admin.documents._svc_options')
+                                    </select>
+                                    <input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">
+                                    <input type="hidden" name="services[{{ $i }}][name]" class="svc-hidden" value="{{ $svc['name'] ?? '' }}">
+                                    @error('services.'.$i.'.name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                                 <div class="col-md-4">
                                     <input type="text" name="services[{{ $i }}][fee]"
@@ -123,12 +129,142 @@
                 </div>
             </div>
         </div>
+
+        {{-- Right: Signed PDF --}}
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong class="card-title mb-0"><i class="fe fe-file fe-16 mr-1"></i> Signed PDF</strong>
+                    @if($doc->signed_pdf)
+                        <span class="cds-status-tag cds-status-tag--done">On file</span>
+                    @else
+                        <span class="cds-status-tag">None</span>
+                    @endif
+                </div>
+                <div class="card-body">
+                    @if($doc->signed_pdf)
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2" style="gap:8px;">
+                                <i class="fe fe-file-text fe-16 text-muted"></i>
+                                <span class="text-muted small">Signed agreement uploaded</span>
+                            </div>
+                            <a href="{{ route('e.documents.signed-pdf', $doc->id) }}"
+                               class="btn btn-secondary btn-sm btn-block mb-2">
+                                <i class="fe fe-download fe-12 mr-1"></i> Download PDF
+                            </a>
+                            <form action="{{ route('e.documents.signed-pdf.destroy', $doc->id) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-outline-secondary btn-sm btn-block"
+                                        data-confirm-delete="Remove the signed PDF? This cannot be undone.">
+                                    <i class="fe fe-trash-2 fe-12 mr-1"></i> Remove PDF
+                                </button>
+                            </form>
+                        </div>
+                        <hr>
+                        <p class="text-muted small mb-2">Replace with a new file:</p>
+                    @endif
+
+                    <form action="{{ route('e.documents.signed-pdf.upload', $doc->id) }}" method="POST" enctype="multipart/form-data" id="pdfUploadForm">
+                        @csrf
+                        @error('signed_pdf')
+                            <div class="alert alert-danger py-2 mb-2">{{ $message }}</div>
+                        @enderror
+                        <div class="form-group mb-2">
+                            <div id="pdfDropZone" onclick="document.getElementById('pdfFileInput').click()"
+                                 style="border:2px dashed #c6c6c6;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:#f4f4f4;">
+                                <div id="pdfDropIcon" style="font-size:2rem;margin-bottom:6px;color:#8d8d8d;">
+                                    <i class="fe fe-upload-cloud"></i>
+                                </div>
+                                <div id="pdfDropLabel" style="font-weight:600;color:var(--cds-text-primary);margin-bottom:4px;">
+                                    Click or drag &amp; drop PDF here
+                                </div>
+                                <div style="font-size:12px;color:#8d8d8d;">PDF only &nbsp;•&nbsp; Max 5 MB</div>
+                                <div id="pdfFileInfo" style="display:none;margin-top:10px;">
+                                    <span style="display:inline-flex;align-items:center;gap:8px;background:#e0e0e0;border:1px solid #8d8d8d;padding:5px 14px;font-size:13px;color:var(--cds-text-primary);font-weight:600;">
+                                        <i class="fe fe-file fe-12"></i>
+                                        <span id="pdfFileName"></span>
+                                        <span id="pdfFileSize" style="font-weight:400;color:#525252;"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <input type="file" name="signed_pdf" id="pdfFileInput" accept="application/pdf" style="display:none" required>
+                            <small class="text-muted">PDF only &middot; max 5 MB</small>
+                        </div>
+                        <div id="pdfProgress" style="display:none;margin-bottom:10px;">
+                            <div style="display:flex;justify-content:space-between;font-size:12px;color:#525252;margin-bottom:4px;">
+                                <span>Uploading...</span><span id="pdfProgressPct">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div id="pdfProgressBar" class="progress-bar" role="progressbar" style="width:0%;"></div>
+                            </div>
+                        </div>
+                        <button type="submit" id="pdfSubmitBtn" class="btn btn-secondary btn-sm btn-block">
+                            <i class="fe fe-upload fe-12 mr-1"></i> {{ $doc->signed_pdf ? 'Replace PDF' : 'Upload Signed PDF' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
+(function() {
+    var dropZone  = document.getElementById('pdfDropZone');
+    var fileInput = document.getElementById('pdfFileInput');
+    if (!dropZone || !fileInput) return;
+
+    function formatBytes(b) {
+        if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+        return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    function showFile(file) {
+        document.getElementById('pdfFileName').textContent = file.name;
+        document.getElementById('pdfFileSize').textContent = '(' + formatBytes(file.size) + ')';
+        document.getElementById('pdfFileInfo').style.display = 'block';
+        document.getElementById('pdfDropLabel').textContent = 'File selected';
+        document.getElementById('pdfDropIcon').innerHTML = '<i class="fe fe-check-circle" style="color:#161616;"></i>';
+        dropZone.style.borderColor = '#161616';
+        dropZone.style.background  = '#e0e0e0';
+    }
+
+    fileInput.addEventListener('change', function() { if (this.files[0]) showFile(this.files[0]); });
+
+    dropZone.addEventListener('dragover',  function(e) { e.preventDefault(); this.style.borderColor = '#525252'; this.style.background = '#e0e0e0'; });
+    dropZone.addEventListener('dragleave', function()  { this.style.borderColor = '#c6c6c6'; this.style.background = '#f4f4f4'; });
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.borderColor = '#c6c6c6'; this.style.background = '#f4f4f4';
+        var file = e.dataTransfer.files[0];
+        if (file) { var dt = new DataTransfer(); dt.items.add(file); fileInput.files = dt.files; showFile(file); }
+    });
+
+    document.getElementById('pdfUploadForm').addEventListener('submit', function(e) {
+        if (!fileInput.files[0]) return;
+        e.preventDefault();
+        var form = this;
+        var bar  = document.getElementById('pdfProgressBar');
+        var pct  = document.getElementById('pdfProgressPct');
+        var btn  = document.getElementById('pdfSubmitBtn');
+        document.getElementById('pdfProgress').style.display = 'block';
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Uploading...';
+        var xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) { var p = Math.round(e.loaded / e.total * 100); bar.style.width = p + '%'; pct.textContent = p + '%'; }
+        };
+        xhr.upload.addEventListener('load', function() { bar.style.width = '100%'; pct.textContent = '100%'; btn.innerHTML = '<span class="spinner-border spinner-border-sm mr-1"></span> Processing...'; });
+        xhr.onload  = function() { window.location.href = xhr.responseURL; };
+        xhr.onerror = function() { btn.disabled = false; btn.innerHTML = '<i class="fe fe-upload fe-12 mr-1"></i> Upload Signed PDF'; document.getElementById('pdfProgress').style.display = 'none'; alert('Upload failed. Please try again.'); };
+        xhr.open('POST', form.action);
+        xhr.send(new FormData(form));
+    });
+})();
+
 function initAgreementSelect2() {
     if (!document.getElementById('agreementClient')) return;
     if (typeof jQuery === 'undefined' || !jQuery.fn.select2) { setTimeout(initAgreementSelect2, 80); return; }
@@ -146,16 +282,56 @@ initAgreementSelect2();
 
 var rowIndex = {{ count(old('services', $doc->services ?? [])) }};
 
+var SVC_NAMES = Array.from(document.querySelectorAll('#servicesContainer .svc-picker option')).map(function(o){ return o.value; }).filter(function(v){ return v && v !== '__custom__'; });
+
+function svcPickerHTML(idx) {
+    var sel = document.querySelector('.svc-picker');
+    return '<select class="form-control svc-picker mb-1">' + sel.innerHTML + '</select>' +
+           '<input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">' +
+           '<input type="hidden" name="services[' + idx + '][name]" class="svc-hidden" value="">';
+}
+
+function initSvcRow(row, existingVal) {
+    var picker = row.querySelector('.svc-picker');
+    var custom = row.querySelector('.svc-custom');
+    var hidden = row.querySelector('.svc-hidden');
+    if (existingVal) {
+        hidden.value = existingVal;
+        if (SVC_NAMES.indexOf(existingVal) !== -1) {
+            picker.value = existingVal;
+        } else {
+            picker.value = '__custom__';
+            custom.value = existingVal;
+            custom.style.display = 'block';
+        }
+    }
+    picker.addEventListener('change', function() {
+        if (this.value === '__custom__') {
+            custom.style.display = 'block'; custom.focus(); hidden.value = custom.value;
+        } else if (this.value === '') {
+            custom.style.display = 'none'; hidden.value = '';
+        } else {
+            custom.style.display = 'none'; hidden.value = this.value;
+        }
+    });
+    custom.addEventListener('input', function() { hidden.value = this.value; });
+}
+
+document.querySelectorAll('.service-row').forEach(function(row) {
+    initSvcRow(row, row.querySelector('.svc-hidden').value);
+});
+
 document.getElementById('addServiceRow').addEventListener('click', function() {
     var container = document.getElementById('servicesContainer');
     var row = document.createElement('div');
     row.className = 'row service-row mb-2';
     row.dataset.index = rowIndex;
     row.innerHTML =
-        '<div class="col-md-7"><input type="text" name="services[' + rowIndex + '][name]" class="form-control" placeholder="Service name"></div>' +
+        '<div class="col-md-7">' + svcPickerHTML(rowIndex) + '</div>' +
         '<div class="col-md-4"><input type="text" name="services[' + rowIndex + '][fee]" class="form-control" placeholder="Fee (optional)"></div>' +
         '<div class="col-md-1"><button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button></div>';
     container.appendChild(row);
+    initSvcRow(row, '');
     rowIndex++;
 });
 

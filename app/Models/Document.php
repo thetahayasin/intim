@@ -11,7 +11,7 @@ class Document extends Model
 
     protected $fillable = [
         'type', 'client_id', 'client_name', 'firm',
-        'services', 'start_date', 'end_date', 'notes',
+        'services', 'start_date', 'end_date', 'notes', 'signed_pdf',
     ];
 
     protected $casts = [

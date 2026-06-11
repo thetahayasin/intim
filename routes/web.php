@@ -160,6 +160,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/e/documents/{id}/edit', [AdminDocumentController::class, 'edit'])->name('e.documents.edit');
     Route::post('/e/documents/{id}/update', [AdminDocumentController::class, 'update'])->name('e.documents.update');
     Route::delete('/e/documents/{id}', [AdminDocumentController::class, 'destroy'])->name('e.documents.destroy');
+    Route::post('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'uploadSignedPdf'])->name('e.documents.signed-pdf.upload');
+    Route::get('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'downloadSignedPdf'])->name('e.documents.signed-pdf');
+    Route::delete('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'destroySignedPdf'])->name('e.documents.signed-pdf.destroy');
 
 
 

@@ -9,33 +9,43 @@
     @if($doc->firm == 1)
     <style>
         :root {
-            --firm-accent:           #1a3e6e;
-            --firm-accent-text:      #1a4a8a;
-            --firm-card-bg:          #f0f5fb;
-            --firm-card-border:      #b8d0e8;
-            --firm-card-title-bdr:   #90b8d8;
-            --firm-tint-bg:          #e8f0f8;
-            --firm-table-stripe:     #edf3f9;
+            --firm-accent:         #1a3e6e;
+            --firm-accent-text:    #1a4a8a;
+            --firm-card-bg:        #f0f5fb;
+            --firm-card-border:    #b8d0e8;
+            --firm-card-title-bdr: #90b8d8;
+            --firm-tint-bg:        #e8f0f8;
+            --firm-table-stripe:   #edf3f9;
         }
     </style>
     @else
     <style>
         :root {
-            --firm-accent:           #f4af1a;
-            --firm-accent-text:      #c8860a;
-            --firm-card-bg:          #fffdf5;
-            --firm-card-border:      #e8d9b0;
-            --firm-card-title-bdr:   #f0e0b0;
-            --firm-tint-bg:          #fdf6e3;
-            --firm-table-stripe:     #fdf9f0;
+            --firm-accent:         #f4af1a;
+            --firm-accent-text:    #c8860a;
+            --firm-card-bg:        #fffdf5;
+            --firm-card-border:    #e8d9b0;
+            --firm-card-title-bdr: #f0e0b0;
+            --firm-tint-bg:        #fdf6e3;
+            --firm-table-stripe:   #fdf9f0;
         }
     </style>
     @endif
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Times New Roman', Times, serif; color: #222; background: #fff; font-size: 14px; line-height: 1.6; }
-        .page { max-width: 860px; margin: 0 auto; padding: 44px 50px; }
+        body { font-family: 'Times New Roman', Times, serif; color: #222; background: #f0f0f0; font-size: 14px; line-height: 1.6; }
+
+        /* Each logical page is its own block */
+        .doc-page {
+            max-width: 860px;
+            margin: 0 auto 24px;
+            padding: 44px 50px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
         /* Cover page */
         .top-bar { text-align: center; letter-spacing: 3px; font-size: 11px; color: var(--firm-accent); border-bottom: 2px solid var(--firm-accent); padding-bottom: 8px; margin-bottom: 24px; font-family: Arial, sans-serif; }
@@ -54,10 +64,11 @@
         .meta-table td:first-child { background: var(--firm-tint-bg); color: #999; letter-spacing: 2px; font-size: 10px; width: 38%; font-family: Arial, sans-serif; }
         .meta-table td:last-child { color: var(--firm-accent-text); font-weight: bold; font-size: 15px; }
 
-        .footer-addr { text-align: center; color: #777; font-size: 11px; border-top: 1px solid #ddd; margin-top: 30px; padding-top: 10px; font-family: Arial, sans-serif; }
+        .footer-addr { text-align: center; color: #777; font-size: 11px; border-top: 1px solid #ddd; padding-top: 10px; font-family: Arial, sans-serif; }
 
-        /* Inner page header */
-        .inner-header { display: flex; justify-content: space-between; font-size: 10px; color: #bbb; margin-bottom: 18px; margin-top: 8px; border-bottom: 1px solid #e8e0d0; padding-bottom: 5px; font-family: Arial, sans-serif; letter-spacing: 0.5px; }
+        /* Inner page header / footer */
+        .inner-header { display: flex; justify-content: space-between; font-size: 10px; color: #bbb; margin-bottom: 22px; border-bottom: 1px solid #e8e0d0; padding-bottom: 5px; font-family: Arial, sans-serif; letter-spacing: 0.5px; }
+        .inner-footer { display: flex; justify-content: space-between; font-size: 10px; color: #bbb; margin-top: auto; padding-top: 16px; border-top: 1px solid #e8e0d0; font-family: Arial, sans-serif; letter-spacing: 0.5px; }
 
         /* Section */
         .section { margin-bottom: 22px; page-break-inside: avoid; break-inside: avoid; }
@@ -68,10 +79,9 @@
         .svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
         .svc-card {
             border: 1px solid var(--firm-card-border);
-            border-radius: 6px;
+            border-radius: 5px;
             padding: 14px 16px;
             background: var(--firm-card-bg);
-            box-shadow: 0 3px 14px rgba(0,0,0,0.09);
             page-break-inside: avoid;
             break-inside: avoid;
         }
@@ -104,8 +114,8 @@
         @media print {
             body { background: white !important; }
             .no-print { display: none !important; }
-            .page { padding: 24px 36px; }
-            .svc-card { box-shadow: 0 1px 5px rgba(0,0,0,0.13); page-break-inside: avoid; break-inside: avoid; }
+            .doc-page { margin: 0 auto; padding: 28px 40px; min-height: 100vh; page-break-after: always; break-after: page; }
+            .svc-card { page-break-inside: avoid; break-inside: avoid; }
             .svc-grid { page-break-inside: avoid; break-inside: avoid; }
             .section { page-break-inside: avoid; break-inside: avoid; }
         }
@@ -137,51 +147,52 @@
     </div>
 </div>
 
-<div class="page">
+{{-- ===================== PAGE 1: COVER ===================== --}}
+<div class="doc-page">
 
-    {{-- Page 1: Cover --}}
     <div class="top-bar">
         TAXATION <span>•</span> SALES TAX <span>•</span> AUDIT <span>•</span> CORPORATE (SECP)
     </div>
 
-    <div class="logo-block">
-        <img src="{{ asset($doc->firm_logo) }}" alt="{{ $doc->firm_name }}">
-        @if($doc->firm == 0)
-            <div style="font-weight:bold;margin-top:6px;font-size:14px;">Chartered Accountants</div>
-        @endif
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;">
+
+        <div class="logo-block">
+            <img src="{{ asset($doc->firm_logo) }}" alt="{{ $doc->firm_name }}">
+            @if($doc->firm == 0)
+                <div style="font-weight:bold;margin-top:6px;font-size:14px;">Chartered Accountants</div>
+            @endif
+        </div>
+
+        <div class="doc-title-label">P R O F E S S I O N A L &nbsp;&nbsp; S E R V I C E S</div>
+        <div class="doc-title">Agreement</div>
+        <div class="dots">&#9670; &nbsp; &#9670; &nbsp; &#9670;</div>
+        <div class="doc-subtitle">A formal record of professional services agreed between the Firm and the Client,<br>inclusive of scope, fee schedule, responsibilities, and mutual acceptance.</div>
+
+        <table class="meta-table" style="margin-top:28px;">
+            <tr>
+                <td>Client Name</td>
+                <td>{{ $doc->client_name }}</td>
+            </tr>
+        </table>
+
     </div>
-
-    <div class="doc-title-label">P R O F E S S I O N A L &nbsp;&nbsp; S E R V I C E S</div>
-    <div class="doc-title">Agreement</div>
-    <div class="dots">&#9670; &nbsp; &#9670; &nbsp; &#9670;</div>
-    <div class="doc-subtitle">A formal record of professional services agreed between the Firm and the Client,<br>inclusive of scope, fee schedule, responsibilities, and mutual acceptance.</div>
-
-    <table class="meta-table">
-        <tr>
-            <td>P R E P A R E D &nbsp; F O R</td>
-            <td>{{ $doc->client_name }}</td>
-        </tr>
-        <tr>
-            <td>D A T E</td>
-            <td>{{ $doc->created_at->format('F j, Y') }}</td>
-        </tr>
-    </table>
 
     <div class="footer-addr">
         @if($doc->firm == 0)
-            72-West, 2nd Floor, Benazir Plaza, Jinnah Avenue, Blue Area, Islamabad &nbsp;•&nbsp;
-            Phone: 051-2120368 &nbsp;•&nbsp; E-mail: asif@argroup.com.pk
+            2nd Floor, Benazir Plaza, Blue Area, Islamabad &nbsp;•&nbsp; Phone: 051-2120368 &nbsp;&nbsp; Asif Associates
         @else
-            H.A.M.D &amp; Co. &nbsp;•&nbsp; Chartered Accountants
+            2nd Floor, Benazir Plaza, Blue Area, Islamabad &nbsp;•&nbsp; Phone: 051-2120368 &nbsp;&nbsp; H.A.M.D &amp; Co.
         @endif
     </div>
 
-    <div style="page-break-after:always;"></div>
+</div>
 
-    {{-- Page 2: The Firm + Services Provided --}}
+{{-- ===================== PAGE 2: THE FIRM + SERVICES ===================== --}}
+<div class="doc-page">
+
     <div class="inner-header">
+        <span>Professional Services Agreement</span>
         <span>{{ $doc->firm_name }}</span>
-        <span>Professional Services &nbsp;•&nbsp; Agreement</span>
     </div>
 
     <div class="section">
@@ -270,12 +281,19 @@
         </div>
     </div>
 
-    <div style="page-break-after:always;"></div>
-
-    {{-- Page 3: Engagement Agreement --}}
-    <div class="inner-header">
+    <div class="inner-footer">
+        <span>2nd Floor, Benazir Plaza, Blue Area, Islamabad &nbsp;•&nbsp; Phone: 051-2120368</span>
         <span>{{ $doc->firm_name }}</span>
-        <span>Professional Services &nbsp;•&nbsp; Agreement</span>
+    </div>
+
+</div>
+
+{{-- ===================== PAGE 3: ENGAGEMENT AGREEMENT ===================== --}}
+<div class="doc-page">
+
+    <div class="inner-header">
+        <span>Professional Services Agreement</span>
+        <span>{{ $doc->firm_name }}</span>
     </div>
 
     <div class="section">
@@ -318,10 +336,6 @@
         <p class="clause"><strong>Scope.</strong> &nbsp; The Firm shall deliver the services listed above. Any work falling outside the agreed scope shall be treated as additional services and charged separately, subject to prior written agreement.</p>
         <p class="clause"><strong>Professional Fee.</strong> &nbsp; The fee shall be as agreed above or as subsequently confirmed in writing. The Firm reserves the right to review fees annually with reasonable notice to the Client.</p>
         <p class="clause"><strong>Client Responsibilities.</strong> &nbsp; The Client shall ensure timely provision of accurate records, documentation and internal access necessary for the Firm to perform its duties. The Firm accepts no liability for delays, penalties or incorrect filings arising from incomplete or erroneous information provided by the Client.</p>
-        <p class="clause"><strong>Confidentiality.</strong> &nbsp; Each Party undertakes to treat all information received from the other Party in the course of this engagement as strictly confidential. Such information shall not be disclosed to any third party without prior written consent, except where required by applicable law, regulation or court order.</p>
-        <p class="clause"><strong>Liability.</strong> &nbsp; The Firm's aggregate liability under this Agreement shall not exceed the total fees paid by the Client in the twelve months preceding the event giving rise to the claim. The Firm shall not be liable for any indirect, consequential or special loss.</p>
-        <p class="clause"><strong>Term &amp; Termination.</strong> &nbsp; This engagement commences on the Start Date and continues until completion of services or termination by either Party upon thirty (30) days' written notice. Outstanding fees for work completed up to the date of termination remain payable.</p>
-        <p class="clause"><strong>Governing Law.</strong> &nbsp; This Agreement is governed by the laws of Pakistan. All disputes shall be subject to the exclusive jurisdiction of the courts of Islamabad.</p>
     </div>
 
     @if($doc->notes)
@@ -331,57 +345,64 @@
     </div>
     @endif
 
-    <div style="page-break-after:always;"></div>
-
-    {{-- Page 4: Acceptance / Signatures --}}
-    <div style="display:flex;flex-direction:column;min-height:900px;">
-
-        <div class="inner-header">
-            <span>{{ $doc->firm_name }}</span>
-            <span>Professional Services &nbsp;•&nbsp; Agreement</span>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Acceptance</div>
-            <p class="firm-intro">
-                By executing this Agreement, the Parties confirm that they have read, understood and voluntarily agreed
-                to all terms set out herein. This Agreement shall become legally binding upon the signatures of both
-                authorized representatives below. A duly executed copy authorizes <strong>{{ $doc->firm_name }}</strong>
-                to commence performance of the agreed services on behalf of the Client.
-            </p>
-            <p class="firm-intro" style="margin-top:10px;">
-                The signatories below represent and warrant that they have full authority to bind their respective
-                organizations to the obligations contained in this Agreement.
-            </p>
-        </div>
-
-        <div class="sig-grid">
-            <div>
-                <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
-                <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
-                <div class="sig-name">Muhammad Asif Raza (FCA)</div>
-                <div class="sig-role">Partner</div>
-                @if($doc->firm == 0)
-                    <div class="sig-org">Asif Associates Chartered Accountants</div>
-                @else
-                    <div class="sig-org">H.A.M.D &amp; Co Chartered Accountants</div>
-                @endif
-                <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
-            </div>
-
-            <div>
-                <div class="sig-label">F O R &nbsp; T H E &nbsp; C L I E N T</div>
-                <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
-                <div class="sig-name" style="color:var(--firm-accent-text);">{{ $doc->client_name }}</div>
-                <div class="sig-role">Authorized Signatory</div>
-                <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
-            </div>
-        </div>
-
-        <div style="margin-top:auto;"></div>
-
+    <div class="inner-footer">
+        <span>2nd Floor, Benazir Plaza, Blue Area, Islamabad &nbsp;•&nbsp; Phone: 051-2120368</span>
+        <span>{{ $doc->firm_name }}</span>
     </div>
 
 </div>
+
+{{-- ===================== PAGE 4: ACCEPTANCE ===================== --}}
+<div class="doc-page">
+
+    <div class="inner-header">
+        <span>Professional Services Agreement</span>
+        <span>{{ $doc->firm_name }}</span>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Acceptance</div>
+        <p class="firm-intro">
+            By executing this Agreement, the Parties confirm that they have read, understood and voluntarily agreed
+            to all terms set out herein. This Agreement shall become legally binding upon the signatures of both
+            authorized representatives below. A duly executed copy authorizes <strong>{{ $doc->firm_name }}</strong>
+            to commence performance of the agreed services on behalf of the Client.
+        </p>
+        <p class="firm-intro" style="margin-top:10px;">
+            The signatories below represent and warrant that they have full authority to bind their respective
+            organizations to the obligations contained in this Agreement.
+        </p>
+    </div>
+
+    <div class="sig-grid">
+        <div>
+            <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
+            <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
+            <div class="sig-name">Muhammad Asif Raza (FCA)</div>
+            <div class="sig-role">Partner</div>
+            @if($doc->firm == 0)
+                <div class="sig-org">Asif Associates Chartered Accountants</div>
+            @else
+                <div class="sig-org">H.A.M.D &amp; Co Chartered Accountants</div>
+            @endif
+            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+        </div>
+
+        <div>
+            <div class="sig-label">F O R &nbsp; T H E &nbsp; C L I E N T</div>
+            <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
+            <div class="sig-name" style="color:var(--firm-accent-text);">{{ $doc->client_name }}</div>
+            <div class="sig-role">Authorized Signatory</div>
+            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+        </div>
+    </div>
+
+    <div class="inner-footer">
+        <span>2nd Floor, Benazir Plaza, Blue Area, Islamabad &nbsp;•&nbsp; Phone: 051-2120368</span>
+        <span>{{ $doc->firm_name }}</span>
+    </div>
+
+</div>
+
 </body>
 </html>

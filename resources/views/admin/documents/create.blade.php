@@ -80,13 +80,15 @@
                                 @foreach(old('services') as $i => $svc)
                                 <div class="row service-row mb-2" data-index="{{ $i }}">
                                     <div class="col-md-7">
-                                        <input type="text" name="services[{{ $i }}][name]" value="{{ $svc['name'] }}"
-                                               class="form-control @error('services.'.$i.'.name') is-invalid @enderror"
-                                               placeholder="Service name e.g. Taxation Services">
-                                        @error('services.'.$i.'.name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        <select class="form-control svc-picker mb-1">
+                                            @include('admin.documents._svc_options')
+                                        </select>
+                                        <input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">
+                                        <input type="hidden" name="services[{{ $i }}][name]" class="svc-hidden" value="{{ $svc['name'] ?? '' }}">
+                                        @error('services.'.$i.'.name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="text" name="services[{{ $i }}][fee]" value="{{ $svc['fee'] }}"
+                                        <input type="text" name="services[{{ $i }}][fee]" value="{{ $svc['fee'] ?? '' }}"
                                                class="form-control" placeholder="Fee e.g. PKR 50,000">
                                     </div>
                                     <div class="col-md-1">
@@ -97,7 +99,11 @@
                             @else
                             <div class="row service-row mb-2" data-index="0">
                                 <div class="col-md-7">
-                                    <input type="text" name="services[0][name]" class="form-control" placeholder="Service name e.g. Taxation Services">
+                                    <select class="form-control svc-picker mb-1">
+                                        @include('admin.documents._svc_options')
+                                    </select>
+                                    <input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">
+                                    <input type="hidden" name="services[0][name]" class="svc-hidden" value="">
                                 </div>
                                 <div class="col-md-4">
                                     <input type="text" name="services[0][fee]" class="form-control" placeholder="Fee e.g. PKR 50,000">
@@ -148,16 +154,56 @@ initAgreementSelect2();
 
 var rowIndex = {{ old('services') ? count(old('services')) : 1 }};
 
+var SVC_NAMES = Array.from(document.querySelectorAll('#servicesContainer .svc-picker option')).map(function(o){ return o.value; }).filter(function(v){ return v && v !== '__custom__'; });
+
+function svcPickerHTML(idx) {
+    var sel = document.querySelector('.svc-picker');
+    return '<select class="form-control svc-picker mb-1">' + sel.innerHTML + '</select>' +
+           '<input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">' +
+           '<input type="hidden" name="services[' + idx + '][name]" class="svc-hidden" value="">';
+}
+
+function initSvcRow(row, existingVal) {
+    var picker = row.querySelector('.svc-picker');
+    var custom = row.querySelector('.svc-custom');
+    var hidden = row.querySelector('.svc-hidden');
+    if (existingVal) {
+        hidden.value = existingVal;
+        if (SVC_NAMES.indexOf(existingVal) !== -1) {
+            picker.value = existingVal;
+        } else {
+            picker.value = '__custom__';
+            custom.value = existingVal;
+            custom.style.display = 'block';
+        }
+    }
+    picker.addEventListener('change', function() {
+        if (this.value === '__custom__') {
+            custom.style.display = 'block'; custom.focus(); hidden.value = custom.value;
+        } else if (this.value === '') {
+            custom.style.display = 'none'; hidden.value = '';
+        } else {
+            custom.style.display = 'none'; hidden.value = this.value;
+        }
+    });
+    custom.addEventListener('input', function() { hidden.value = this.value; });
+}
+
+document.querySelectorAll('.service-row').forEach(function(row) {
+    initSvcRow(row, row.querySelector('.svc-hidden').value);
+});
+
 document.getElementById('addServiceRow').addEventListener('click', function() {
     var container = document.getElementById('servicesContainer');
     var row = document.createElement('div');
     row.className = 'row service-row mb-2';
     row.dataset.index = rowIndex;
     row.innerHTML =
-        '<div class="col-md-7"><input type="text" name="services[' + rowIndex + '][name]" class="form-control" placeholder="Service name"></div>' +
+        '<div class="col-md-7">' + svcPickerHTML(rowIndex) + '</div>' +
         '<div class="col-md-4"><input type="text" name="services[' + rowIndex + '][fee]" class="form-control" placeholder="Fee (optional)"></div>' +
         '<div class="col-md-1"><button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button></div>';
     container.appendChild(row);
+    initSvcRow(row, '');
     rowIndex++;
 });
 

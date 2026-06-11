@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Document;
 use App\Models\Client;
 
@@ -30,6 +31,13 @@ class AdminDocumentController extends Controller
 
         $documents = $query->paginate(20)->appends($request->all());
 
+        // Sync: clear signed_pdf if file no longer exists on disk
+        foreach ($documents as $doc) {
+            if ($doc->signed_pdf && !Storage::exists($doc->signed_pdf)) {
+                $doc->update(['signed_pdf' => null]);
+            }
+        }
+
         $stats = [
             'total'      => Document::count(),
             'proposals'  => Document::where('type', 'proposal')->count(),
@@ -50,15 +58,27 @@ class AdminDocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_name'   => 'required|string|max:255',
-            'firm'          => 'required|in:0,1',
-            'services'      => 'required|array|min:1',
+            'client_name'     => 'required|string|max:255',
+            'firm'            => 'required|in:0,1',
+            'services'        => 'required|array|min:1',
             'services.*.name' => 'required|string|max:255',
             'services.*.fee'  => 'nullable|string|max:255',
-            'start_date'    => 'nullable|date',
-            'end_date'      => 'nullable|date|after_or_equal:start_date',
-            'notes'         => 'nullable|string|max:2000',
+            'start_date'      => 'nullable|date',
+            'end_date'        => 'nullable|date|after_or_equal:start_date',
+            'notes'           => 'nullable|string|max:2000',
         ]);
+
+        $duplicate = Document::where('type', 'agreement')
+            ->where('firm', $request->firm)
+            ->where('client_name', $request->client_name)
+            ->exists();
+
+        if ($duplicate) {
+            $firmLabel = $request->firm == 1 ? 'H.A.M.D & Co' : 'Asif Associates';
+            return back()
+                ->withErrors(['firm' => "An agreement for \"{$request->client_name}\" with {$firmLabel} already exists."])
+                ->withInput();
+        }
 
         $client = Client::where('name', $request->client_name)->first();
 
@@ -86,6 +106,12 @@ class AdminDocumentController extends Controller
     public function edit($id)
     {
         $doc = Document::findOrFail($id);
+
+        // Sync: clear if file gone from disk
+        if ($doc->signed_pdf && !Storage::exists($doc->signed_pdf)) {
+            $doc->update(['signed_pdf' => null]);
+        }
+
         $clients = Client::orderBy('name')->get();
         return view('admin.documents.edit', compact('doc', 'clients'));
     }
@@ -104,6 +130,20 @@ class AdminDocumentController extends Controller
         ]);
 
         $doc = Document::findOrFail($id);
+
+        $duplicate = Document::where('type', 'agreement')
+            ->where('firm', $request->firm)
+            ->where('client_name', $request->client_name)
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($duplicate) {
+            $firmLabel = $request->firm == 1 ? 'H.A.M.D & Co' : 'Asif Associates';
+            return back()
+                ->withErrors(['firm' => "An agreement for \"{$request->client_name}\" with {$firmLabel} already exists."])
+                ->withInput();
+        }
+
         $client = Client::where('name', $request->client_name)->first();
 
         $doc->update([
@@ -116,12 +156,73 @@ class AdminDocumentController extends Controller
             'notes'       => $request->notes,
         ]);
 
-        return redirect()->route('e.documents')->with('success', 'Agreement updated successfully.');
+        return redirect()->route('e.documents.edit', $id)->with('success', 'Agreement updated successfully.');
     }
 
     public function destroy($id)
     {
-        Document::findOrFail($id)->delete();
+        $doc = Document::findOrFail($id);
+
+        if ($doc->signed_pdf) {
+            Storage::delete($doc->signed_pdf);
+        }
+
+        $doc->delete();
         return redirect()->route('e.documents')->with('success', 'Document deleted.');
+    }
+
+    public function uploadSignedPdf(Request $request, $id)
+    {
+        $request->validate([
+            'signed_pdf' => 'required|file|mimes:pdf|max:5120',
+        ], [
+            'signed_pdf.mimes' => 'Only PDF files are allowed.',
+            'signed_pdf.max'   => 'PDF must not exceed 5 MB.',
+        ]);
+
+        $doc = Document::findOrFail($id);
+
+        // Delete old file if exists
+        if ($doc->signed_pdf && Storage::exists($doc->signed_pdf)) {
+            Storage::delete($doc->signed_pdf);
+        }
+
+        $path = $request->file('signed_pdf')->store('documents/signed');
+        $doc->update(['signed_pdf' => $path]);
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true]);
+        }
+        return back()->with('success', 'Signed agreement uploaded.');
+    }
+
+    public function downloadSignedPdf($id)
+    {
+        $doc = Document::findOrFail($id);
+
+        if (!$doc->signed_pdf) {
+            abort(404);
+        }
+
+        if (!Storage::exists($doc->signed_pdf)) {
+            $doc->update(['signed_pdf' => null]);
+            abort(404);
+        }
+
+        $filename = 'Signed-Agreement-' . str_replace(['/', '\\', ' '], '-', $doc->client_name) . '.pdf';
+        return Storage::download($doc->signed_pdf, $filename);
+    }
+
+    public function destroySignedPdf($id)
+    {
+        $doc = Document::findOrFail($id);
+
+        if ($doc->signed_pdf && Storage::exists($doc->signed_pdf)) {
+            Storage::delete($doc->signed_pdf);
+        }
+
+        $doc->update(['signed_pdf' => null]);
+
+        return back()->with('success', 'Signed PDF removed.');
     }
 }
