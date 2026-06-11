@@ -392,6 +392,7 @@
             </div>
             <div class="sig-name">Muhammad Asif Raza (FCA)</div>
             <div class="sig-role">Partner</div>
+            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
         </div>
 
         <div>
