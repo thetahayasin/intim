@@ -36,7 +36,7 @@
         .section-title { font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 2px solid #f4af1a; padding-bottom: 5px; margin-bottom: 12px; }
         .firm-intro { color: #333; text-align: justify; }
 
-        /* Services grid (static what-we-provide) */
+        /* Services grid */
         .svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
         .svc-card { border: 1px solid #e8d9b0; border-radius: 5px; padding: 14px 16px; background: #fffdf5; }
         .svc-card-title { font-weight: bold; font-size: 13px; letter-spacing: 1px; color: #c8860a; text-transform: uppercase; margin-bottom: 8px; font-family: Arial, sans-serif; border-bottom: 1px solid #f0e0b0; padding-bottom: 5px; }
@@ -112,14 +112,14 @@
         @endif
     </div>
 
-    <div class="doc-title-label">P R O F E S S I O N A L &nbsp; S E R V I C E S</div>
+    <div class="doc-title-label">P R O F E S S I O N A L &nbsp;&nbsp; S E R V I C E S</div>
     <div class="doc-title">Agreement</div>
-    <div class="dots">&#9632; &nbsp; &#9632; &nbsp; &#9632;</div>
-    <div class="doc-subtitle">A statement of the professional services offered by the firm, with the engagement agreement and acceptance to follow.</div>
+    <div class="dots">&#9670; &nbsp; &#9670; &nbsp; &#9670;</div>
+    <div class="doc-subtitle">A formal record of professional services agreed between the Firm and the Client,<br>inclusive of scope, fee schedule, responsibilities, and mutual acceptance.</div>
 
     <table class="meta-table">
         <tr>
-            <td>P R E P A R E D &nbsp; F O R</td>
+            <td>C L I E N T &nbsp; N A M E</td>
             <td>{{ $doc->client_name }}</td>
         </tr>
         <tr>
@@ -133,13 +133,13 @@
             72-West, 2nd Floor, Benazir Plaza, Jinnah Avenue, Blue Area, Islamabad &nbsp;•&nbsp;
             Phone: 051-2120368 &nbsp;•&nbsp; E-mail: asif@argroup.com.pk
         @else
-            H.A.M.D &amp; CO &nbsp;•&nbsp; Chartered Accountants
+            H.A.M.D &amp; Co. &nbsp;•&nbsp; Chartered Accountants
         @endif
     </div>
 
     <div style="page-break-after:always;"></div>
 
-    {{-- Page 2: The Firm + Services We Provide --}}
+    {{-- Page 2: The Firm + Services Provided --}}
     <div class="inner-header">
         <span>{{ $doc->firm_name }}</span>
         <span>Professional Services &nbsp;•&nbsp; Agreement</span>
@@ -149,69 +149,88 @@
         <div class="section-title">The Firm</div>
         @if($doc->firm == 0)
         <p class="firm-intro">
-            Asif Associates, Chartered Accountants is a firm based in Islamabad offering a wide range of professional
-            services in accounting, audit, taxation, business advisory and corporate affairs. Established in 2007 by
-            Mr. Muhammad Asif Raza (FCA) under the Chartered Accountants Ordinance, 1961, the firm brings over fifteen
-            years of experience and a team of qualified professionals, including Chartered Accountants, Cost &amp;
-            Management Accountants, tax specialists and corporate consultants, serving clients across Pakistan.
+            Asif Associates Chartered Accountants is a professional services firm based in Islamabad, providing expert
+            advisory across accounting, audit, taxation, corporate governance and business consultancy. Established in
+            2007 by Muhammad Asif Raza (FCA) under the Chartered Accountants Ordinance, 1961, the Firm has built a
+            reputation grounded in technical rigour, client responsiveness and unwavering professional integrity.
         </p>
         <p class="firm-intro" style="margin-top:10px;">
-            Our approach is partner-led: an individual partner handles each client's affairs and serves as the focal point
-            for every enquiry, supported by a pool of experts.
+            The Firm is staffed by a team of qualified Chartered Accountants, tax specialists and corporate compliance
+            consultants with collective experience spanning over 20 years. Our client base includes listed companies,
+            mid-market enterprises, foreign subsidiaries, and emerging businesses across multiple industries in Pakistan.
         </p>
         @else
         <p class="firm-intro">
-            H.A.M.D &amp; CO, Chartered Accountants, is a professional services firm providing comprehensive accounting,
-            audit, taxation and advisory services to clients across Pakistan.
+            H.A.M.D &amp; Co. Chartered Accountants is a professional services firm based in Islamabad, providing expert
+            advisory across accounting, audit, taxation, corporate governance and business consultancy. The Firm has built
+            a reputation grounded in technical rigour, client responsiveness and unwavering professional integrity.
+        </p>
+        <p class="firm-intro" style="margin-top:10px;">
+            The Firm is staffed by a team of qualified Chartered Accountants, tax specialists and corporate compliance
+            consultants with collective experience spanning over 20 years. Our client base includes listed companies,
+            mid-market enterprises, foreign subsidiaries, and emerging businesses across multiple industries in Pakistan.
         </p>
         @endif
     </div>
 
     <div class="section">
-        <div class="section-title">Services We Provide</div>
+        <div class="section-title">1. &nbsp; Services Provided</div>
+        <p class="firm-intro" style="margin-bottom:12px;">
+            The Firm offers the following professional services. Detailed scope is set out in each block below.
+            Services not listed herein shall be considered additional work and billed separately upon mutual agreement.
+        </p>
         <div class="svc-grid">
 
             <div class="svc-card">
-                <div class="svc-card-title">Taxation</div>
+                <div class="svc-card-title">Taxation Services</div>
                 <ul>
-                    <li>Income Tax — Corporate &amp; Individual</li>
-                    <li>Advance Tax &amp; Withholding Tax</li>
-                    <li>Tax Planning &amp; Advisory</li>
-                    <li>FBR Registration &amp; Representation</li>
-                    <li>Tax Refund Matters</li>
+                    <li>Preparation and filing of annual income tax return u/s 114.</li>
+                    <li>Monthly, Quarterly and Annual Filing of Income Tax Withholding statements u/s 165.</li>
+                    <li>Monthly sale tax return for all the Provinces, Federal, Gilgit Baltistan and Azad Kashmir.</li>
+                    <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Income Tax Ordinance 2001.</li>
+                    <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Sales Tax 1990.</li>
                 </ul>
             </div>
 
             <div class="svc-card">
-                <div class="svc-card-title">Sales Tax</div>
+                <div class="svc-card-title">Others Taxation Services</div>
                 <ul>
-                    <li>Sales Tax Registration (FBR / SRB / PRA)</li>
-                    <li>Monthly Sales Tax Returns</li>
-                    <li>Input / Output Tax Reconciliation</li>
-                    <li>Sales Tax Refund Claims</li>
-                    <li>Sales Tax Audit Assistance</li>
+                    <li>Any Letter impacting eligibility or continuity of exemption under section 100C.</li>
+                    <li>Application for rectification and penalty waiver request where required.</li>
+                    <li>To represent client before offices of FBR, KPRA, BRA, SRB and AJ&amp;K.</li>
+                    <li>Tax Opinions.</li>
+                </ul>
+            </div>
+
+            <div class="svc-card" style="grid-column:1/-1;">
+                <div class="svc-card-title">Audit &amp; Assurance Services</div>
+                <ul style="columns:2;column-gap:30px;">
+                    <li>Statutory Audits.</li>
+                    <li>Internal Audits.</li>
+                    <li>Review Engagements.</li>
+                    <li>Forensic Audits.</li>
+                    <li>Special Purpose Audits.</li>
                 </ul>
             </div>
 
             <div class="svc-card">
-                <div class="svc-card-title">Audit &amp; Assurance</div>
+                <div class="svc-card-title">Advisory &amp; Consultancy Support</div>
                 <ul>
-                    <li>Statutory / External Audit</li>
-                    <li>Internal Audit &amp; Controls Review</li>
-                    <li>Special Purpose Audits</li>
-                    <li>Due Diligence</li>
-                    <li>Financial Statement Compilation</li>
+                    <li>Book Keeping Services.</li>
+                    <li>Financial Modeling Services.</li>
+                    <li>Consultancy services for Non-Banking Financial Companies (NBFCs).</li>
+                    <li>Budgeting.</li>
                 </ul>
             </div>
 
             <div class="svc-card">
-                <div class="svc-card-title">Corporate (SECP)</div>
+                <div class="svc-card-title">Corporate &amp; SECP Compliance</div>
                 <ul>
-                    <li>Company Incorporation</li>
-                    <li>SECP Annual Filings &amp; Compliance</li>
-                    <li>Corporate Secretarial Services</li>
-                    <li>Foreign Investment Registration</li>
-                    <li>Change of Memorandum / Articles</li>
+                    <li>Filing of Annual Return.</li>
+                    <li>Filing of Form A.</li>
+                    <li>Filing of Form B.</li>
+                    <li>Filing of Form 19.</li>
+                    <li>Company Incorporation.</li>
                 </ul>
             </div>
 
@@ -227,17 +246,17 @@
     </div>
 
     <div class="section">
-        <div class="section-title">Engagement Agreement</div>
+        <div class="section-title">2. &nbsp; Engagement Agreement</div>
         <p class="firm-intro" style="margin-bottom:14px;">
-            This Agreement records the terms on which <strong>{{ $doc->firm_name }}</strong> (the "Firm") will
-            provide professional services to <strong style="color:#c8860a;">{{ $doc->client_name }}</strong> (the "Client")
+            This Agreement formalizes the engagement of <strong>{{ $doc->firm_name }}</strong> (the "Firm") by
+            <strong style="color:#c8860a;">{{ $doc->client_name }}</strong> (the "Client")
             @if($doc->start_date && $doc->end_date)
                 for the period from <strong style="color:#c8860a;">{{ $doc->start_date->format('F j, Y') }}</strong>
                 to <strong style="color:#c8860a;">{{ $doc->end_date->format('F j, Y') }}</strong>.
             @else
                 as agreed between the Parties.
             @endif
-            The Client engages the Firm for the services set out in the table below:
+            The agreed scope and fee schedule is as follows:
         </p>
 
         <table class="services-table">
@@ -258,15 +277,18 @@
         </table>
 
         <p style="font-style:italic;color:#777;font-size:12px;margin-top:8px;font-family:Arial,sans-serif;">
-            All fees are exclusive of applicable taxes. Out-of-pocket expenses shall be charged at actual or 10% of the professional fee, whichever is higher.
+            All fees stated above are exclusive of applicable sales tax and actual out-of-pocket expenses, which will be billed separately at cost.
         </p>
     </div>
 
     <div class="section">
-        <p class="clause"><strong>Scope.</strong> &nbsp; The Firm shall provide the services set out above. Any service not specifically included shall be treated as additional work and charged separately.</p>
-        <p class="clause"><strong>Professional Fee.</strong> &nbsp; The professional fee shall be as recorded in the table above or as otherwise agreed in writing between the Parties.</p>
-        <p class="clause"><strong>Client Responsibilities.</strong> &nbsp; The Client shall provide accurate and complete records, information and access on a timely basis. The Firm is not responsible for delays or penalties arising from late or incorrect information.</p>
-        <p class="clause"><strong>Term.</strong> &nbsp; This engagement continues until the services are completed or until terminated by either Party by reasonable notice in writing.</p>
+        <p class="clause"><strong>Scope.</strong> &nbsp; The Firm shall deliver the services listed above. Any work falling outside the agreed scope shall be treated as additional services and charged separately, subject to prior written agreement.</p>
+        <p class="clause"><strong>Professional Fee.</strong> &nbsp; The fee shall be as agreed above or as subsequently confirmed in writing. The Firm reserves the right to review fees annually with reasonable notice to the Client.</p>
+        <p class="clause"><strong>Client Responsibilities.</strong> &nbsp; The Client shall ensure timely provision of accurate records, documentation and internal access necessary for the Firm to perform its duties. The Firm accepts no liability for delays, penalties or incorrect filings arising from incomplete or erroneous information provided by the Client.</p>
+        <p class="clause"><strong>Confidentiality.</strong> &nbsp; Each Party undertakes to treat all information received from the other Party in the course of this engagement as strictly confidential. Such information shall not be disclosed to any third party without prior written consent, except where required by applicable law, regulation or court order.</p>
+        <p class="clause"><strong>Liability.</strong> &nbsp; The Firm's aggregate liability under this Agreement shall not exceed the total fees paid by the Client in the twelve months preceding the event giving rise to the claim. The Firm shall not be liable for any indirect, consequential or special loss.</p>
+        <p class="clause"><strong>Term &amp; Termination.</strong> &nbsp; This engagement commences on the Start Date and continues until completion of services or termination by either Party upon thirty (30) days' written notice. Outstanding fees for work completed up to the date of termination remain payable.</p>
+        <p class="clause"><strong>Governing Law.</strong> &nbsp; This Agreement is governed by the laws of Pakistan. All disputes shall be subject to the exclusive jurisdiction of the courts of Islamabad.</p>
     </div>
 
     @if($doc->notes)
@@ -287,11 +309,16 @@
         </div>
 
         <div class="section">
-            <div class="section-title">Acceptance</div>
+            <div class="section-title">3. &nbsp; Acceptance</div>
             <p class="firm-intro">
-                By signing below, the Parties confirm that they have read and agree to the terms of this Agreement.
-                A signed copy authorises <strong>{{ $doc->firm_name }}</strong> to perform the services set out above
-                on behalf of the Client.
+                By executing this Agreement, the Parties confirm that they have read, understood and voluntarily agreed
+                to all terms set out herein. This Agreement shall become legally binding upon the signatures of both
+                authorized representatives below. A duly executed copy authorizes <strong>{{ $doc->firm_name }}</strong>
+                to commence performance of the agreed services on behalf of the Client.
+            </p>
+            <p class="firm-intro" style="margin-top:10px;">
+                The signatories below represent and warrant that they have full authority to bind their respective
+                organizations to the obligations contained in this Agreement.
             </p>
         </div>
 
@@ -299,13 +326,12 @@
             <div>
                 <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
                 <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
+                <div class="sig-name">Muhammad Asif Raza (FCA)</div>
+                <div class="sig-role">Partner</div>
                 @if($doc->firm == 0)
-                    <div class="sig-name">Mr. Muhammad Asif Raza (FCA)</div>
-                    <div class="sig-role">Partner</div>
-                    <div class="sig-org">Asif Associates, Chartered Accountants</div>
+                    <div class="sig-org">Asif Associates Chartered Accountants</div>
                 @else
-                    <div class="sig-name">Authorised Signatory</div>
-                    <div class="sig-org">H.A.M.D &amp; CO</div>
+                    <div class="sig-org">H.A.M.D &amp; Co Chartered Accountants</div>
                 @endif
                 <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
             </div>
@@ -314,8 +340,8 @@
                 <div class="sig-label">F O R &nbsp; T H E &nbsp; C L I E N T</div>
                 <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
                 <div class="sig-name" style="color:#c8860a;">{{ $doc->client_name }}</div>
-                <div class="sig-role">Authorised Signatory</div>
-                <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span style="color:#c8860a;">{{ $doc->created_at->format('F j, Y') }}</span></div>
+                <div class="sig-role">Authorized Signatory</div>
+                <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
             </div>
         </div>
 
