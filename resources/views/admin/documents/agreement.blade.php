@@ -174,7 +174,7 @@
     </div>
 
     <div class="section">
-        <div class="section-title">1. &nbsp; Services Provided</div>
+        <div class="section-title">Services Provided</div>
         <p class="firm-intro" style="margin-bottom:12px;">
             The Firm offers the following professional services. Detailed scope is set out in each block below.
             Services not listed herein shall be considered additional work and billed separately upon mutual agreement.
@@ -189,12 +189,6 @@
                     <li>Monthly sale tax return for all the Provinces, Federal, Gilgit Baltistan and Azad Kashmir.</li>
                     <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Income Tax Ordinance 2001.</li>
                     <li>To prepare all kinds of letters or documents relating to litigations issued under relevant sections of Sales Tax 1990.</li>
-                </ul>
-            </div>
-
-            <div class="svc-card">
-                <div class="svc-card-title">Others Taxation Services</div>
-                <ul>
                     <li>Any Letter impacting eligibility or continuity of exemption under section 100C.</li>
                     <li>Application for rectification and penalty waiver request where required.</li>
                     <li>To represent client before offices of FBR, KPRA, BRA, SRB and AJ&amp;K.</li>
@@ -202,9 +196,9 @@
                 </ul>
             </div>
 
-            <div class="svc-card" style="grid-column:1/-1;">
+            <div class="svc-card">
                 <div class="svc-card-title">Audit &amp; Assurance Services</div>
-                <ul style="columns:2;column-gap:30px;">
+                <ul>
                     <li>Statutory Audits.</li>
                     <li>Internal Audits.</li>
                     <li>Review Engagements.</li>
@@ -246,7 +240,7 @@
     </div>
 
     <div class="section">
-        <div class="section-title">2. &nbsp; Engagement Agreement</div>
+        <div class="section-title">Engagement Agreement</div>
         <p class="firm-intro" style="margin-bottom:14px;">
             This Agreement formalizes the engagement of <strong>{{ $doc->firm_name }}</strong> (the "Firm") by
             <strong style="color:#c8860a;">{{ $doc->client_name }}</strong> (the "Client")
@@ -309,7 +303,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">3. &nbsp; Acceptance</div>
+            <div class="section-title">Acceptance</div>
             <p class="firm-intro">
                 By executing this Agreement, the Parties confirm that they have read, understood and voluntarily agreed
                 to all terms set out herein. This Agreement shall become legally binding upon the signatures of both
