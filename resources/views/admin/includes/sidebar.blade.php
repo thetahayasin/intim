@@ -21,6 +21,12 @@
           <span class="ml-3 item-text">Dashboard</span>
         </a>
       </li>
+      <li class="nav-item">
+        <a href="{{ route('e.reports') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.reports') ? 'side-select' : '' }}">
+          <i class="fe fe-bar-chart-2 fe-16"></i>
+          <span class="ml-3 item-text">Financial Reports</span>
+        </a>
+      </li>
     </ul>
     <p class="text-muted nav-heading mt-4 mb-1">
       <span>Associates</span>
@@ -71,17 +77,6 @@
         <a href="{{ route('e.receipts') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.receipts') || Route::currentRouteNamed('e.receipts.create') ? 'side-select' : '' }}">
           <i class="fe fe-shopping-cart fe-16"></i>
           <span class="ml-3 item-text">Receipts</span>
-        </a>
-      </li>
-    </ul>
-    <p class="text-muted nav-heading mt-4 mb-1">
-      <span>Reports</span>
-    </p>
-    <ul class="navbar-nav flex-fill w-100 mb-2">
-      <li class="nav-item">
-        <a href="{{ route('e.reports') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.reports') ? 'side-select' : '' }}">
-          <i class="fe fe-bar-chart-2 fe-16"></i>
-          <span class="ml-3 item-text">Financial Reports</span>
         </a>
       </li>
     </ul>
