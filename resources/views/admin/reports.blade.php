@@ -51,6 +51,9 @@
                                class="form-control form-control-sm" style="width:150px;">
                     </div>
                     <button type="submit" class="btn btn-sm btn-dark" style="font-family:'IBM Plex Sans',sans-serif;">Apply</button>
+                    <button type="submit" name="export" value="1" class="btn btn-sm btn-secondary ml-2" style="font-family:'IBM Plex Sans',sans-serif;">
+                        <i class="fe fe-download fe-12"></i> Export Excel
+                    </button>
                 </div>
 
             </form>

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReportsExport;
 use Carbon\Carbon;
 
 class ReportsController extends Controller
@@ -100,6 +101,14 @@ class ReportsController extends Controller
                 $trendReceipts[] = (float) DB::table('receipts')->whereYear('date', $cursor->year)->whereMonth('date', $cursor->month)->sum('amount');
                 $cursor->addMonth();
             }
+        }
+
+        if ($request->input('export')) {
+            $periodLabel = $period === 'custom'
+                ? $startDate->format('d M Y') . ' to ' . $endDate->format('d M Y')
+                : ['7d' => 'Last 7 Days', '30d' => 'Last 30 Days', '90d' => 'Last 90 Days', 'month' => 'This Month', 'year' => 'This Year'][$period] ?? 'Report';
+            $filename = 'financial-report-' . $startDate->format('Y-m-d') . '-to-' . $endDate->format('Y-m-d') . '.xlsx';
+            return Excel::download(new ReportsExport($startDate, $endDate, $periodLabel), $filename);
         }
 
         return view('admin.reports', compact(
