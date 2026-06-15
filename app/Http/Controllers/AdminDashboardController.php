@@ -13,133 +13,117 @@ use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Pending leaves
-        $totalLeaves = Attendance::where('is_leave', true)
-            ->where('leave_approval', false)
-            ->count();
+        $period = $request->input('period', '7d');
 
-        // Work hours
-        $totalWorkHours = Attendance::where('is_leave', false)
-            ->where('is_present', true)
-            ->sum('work_hours');
+        switch ($period) {
+            case '30d':
+                $startDate = Carbon::now()->subDays(29)->startOfDay();
+                break;
+            case '90d':
+                $startDate = Carbon::now()->subDays(89)->startOfDay();
+                break;
+            case 'month':
+                $startDate = Carbon::now()->startOfMonth()->startOfDay();
+                break;
+            case 'year':
+                $startDate = Carbon::now()->startOfYear()->startOfDay();
+                break;
+            default:
+                $period = '7d';
+                $startDate = Carbon::now()->subDays(6)->startOfDay();
+                break;
+        }
 
-        // Associates
-        $numberOfAss = Associate::count();
+        $endDate   = Carbon::now()->endOfDay();
+        $startStr  = $startDate->toDateString();
+
+        // --- Always-cumulative stats ---
+        $totalLeaves      = Attendance::where('is_leave', true)->where('leave_approval', false)->count();
+        $numberOfAss      = Associate::count();
         $activeAssociates = Associate::where('active', true)->count();
         $archivedAssociates = Associate::where('active', false)->count();
 
-        // Billing totals - use invoice_items if available, fallback to billings table
-        $itemTotals = DB::table('invoice_items')
-            ->selectRaw('COALESCE(SUM(amount), 0) as total_amount, COALESCE(SUM(tax), 0) as total_tax')
-            ->first();
-
-        // Legacy billings without invoice_items
-        $legacyTotals = DB::table('billings')
-            ->whereNotIn('id', function ($query) {
-                $query->select('billing_id')->from('invoice_items');
-            })
-            ->selectRaw('COALESCE(SUM(amount), 0) as total_amount, COALESCE(SUM(tax), 0) as total_tax')
-            ->first();
-
-        $totalSales = (float) $itemTotals->total_amount + (float) $legacyTotals->total_amount;
-        $totalTaxb = (float) $itemTotals->total_tax + (float) $legacyTotals->total_tax;
-
-        // Discount from billings
-        $totalBillingDiscount = (float) DB::table('billings')->sum('discount');
-
-        // Receipt totals
-        $totalReceipts = (float) DB::table('receipts')->sum('amount');
-        $totalDiscount = (float) DB::table('receipts')->sum('discount');
-        $totalTax = (float) DB::table('receipts')->sum('tax');
-
-        // --- 7-Day Billing & Receipt Data ---
-        $sevenDaysAgo = Carbon::now()->subDays(6)->startOfDay();
-        $dailyLabels = [];
-        $dailyBillings = [];
-        $dailyReceipts = [];
-
-        for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            $dailyLabels[] = $date->format('D d');
-
-            $dayBilling = (float) DB::table('billings')
-                ->whereDate('created_at', $date->toDateString())
-                ->sum('amount');
-            $dailyBillings[] = $dayBilling;
-
-            $dayReceipt = (float) DB::table('receipts')
-                ->whereDate('date', $date->toDateString())
-                ->sum('amount');
-            $dailyReceipts[] = $dayReceipt;
-        }
-
-        // --- 7-Day Exact Totals for Bottom Graphs ---
-        $sevenDaysString = $sevenDaysAgo->toDateString();
-
-        $weeklyLeavesApplied = Attendance::where('is_leave', true)
-            ->where('leave_approval', 0)
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->count();
-
-        $weeklyLeavesApproved = Attendance::where('is_leave', true)
-            ->where('leave_approval', 1)
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->count();
-
-        $weeklyLeavesRejected = Attendance::where('is_leave', true)
-            ->where('leave_approval', 2)
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->count();
-
-        $weeklyPresents = Attendance::where('is_leave', false)
+        // --- Period-filtered: Work Hours ---
+        $totalWorkHours = Attendance::where('is_leave', false)
             ->where('is_present', true)
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->count();
+            ->whereDate('date', '>=', $startStr)
+            ->sum('work_hours');
 
-        $weeklyAbsents = Attendance::where('is_leave', false)
-            ->where('is_present', false)
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->whereNotIn(DB::raw('DAYOFWEEK(date)'), [1, 7]) // Ignore weekends usually, assuming logic
-            ->count();
-
-        // 7-day Financial Breakdown
-        $weeklyItemTotals = DB::table('invoice_items')
+        // --- Period-filtered: Financial Overview ---
+        $itemTotals = DB::table('invoice_items')
             ->join('billings', 'invoice_items.billing_id', '=', 'billings.id')
-            ->whereDate('billings.created_at', '>=', $sevenDaysString)
+            ->whereDate('billings.created_at', '>=', $startStr)
             ->selectRaw('COALESCE(SUM(invoice_items.amount), 0) as total_amount, COALESCE(SUM(invoice_items.tax), 0) as total_tax')
             ->first();
 
-        $weeklyLegacyTotals = DB::table('billings')
-            ->whereNotIn('id', function ($query) {
-                $query->select('billing_id')->from('invoice_items');
-            })
-            ->whereDate('created_at', '>=', $sevenDaysString)
+        $legacyTotals = DB::table('billings')
+            ->whereNotIn('id', function ($q) { $q->select('billing_id')->from('invoice_items'); })
+            ->whereDate('created_at', '>=', $startStr)
             ->selectRaw('COALESCE(SUM(amount), 0) as total_amount, COALESCE(SUM(tax), 0) as total_tax')
             ->first();
 
-        $weeklySales = (float) $weeklyItemTotals->total_amount + (float) $weeklyLegacyTotals->total_amount;
-        $weeklyTaxb = (float) $weeklyItemTotals->total_tax + (float) $weeklyLegacyTotals->total_tax;
+        $totalSales          = (float) $itemTotals->total_amount + (float) $legacyTotals->total_amount;
+        $totalTaxb           = (float) $itemTotals->total_tax   + (float) $legacyTotals->total_tax;
+        $totalBillingDiscount = (float) DB::table('billings')->whereDate('created_at', '>=', $startStr)->sum('discount');
+        $totalReceipts        = (float) DB::table('receipts')->whereDate('date', '>=', $startStr)->sum('amount');
+        $totalDiscount        = (float) DB::table('receipts')->whereDate('date', '>=', $startStr)->sum('discount');
+        $totalTax             = (float) DB::table('receipts')->whereDate('date', '>=', $startStr)->sum('tax');
 
-        $weeklyBillingDiscount = (float) DB::table('billings')
-            ->whereDate('created_at', '>=', $sevenDaysString)
-            ->sum('discount');
+        // Same values reused for the donut chart
+        $weeklySales          = $totalSales;
+        $weeklyTaxb           = $totalTaxb;
+        $weeklyBillingDiscount = $totalBillingDiscount;
+        $weeklyReceipts        = $totalReceipts;
+        $weeklyDiscount        = $totalDiscount;
+        $weeklyTax             = $totalTax;
 
-        $weeklyReceipts = (float) DB::table('receipts')
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->sum('amount');
-            
-        $weeklyDiscount = (float) DB::table('receipts')
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->sum('discount');
-            
-        $weeklyTax = (float) DB::table('receipts')
-            ->whereDate('date', '>=', $sevenDaysString)
-            ->sum('tax');
+        // --- Trend chart: grouping depends on period ---
+        $dailyLabels   = [];
+        $dailyBillings = [];
+        $dailyReceipts = [];
 
+        if ($period === 'year') {
+            $cursor = $startDate->copy()->startOfMonth();
+            while ($cursor->lte($endDate)) {
+                $dailyLabels[]   = $cursor->format('M');
+                $dailyBillings[] = (float) DB::table('billings')
+                    ->whereYear('created_at', $cursor->year)->whereMonth('created_at', $cursor->month)->sum('amount');
+                $dailyReceipts[] = (float) DB::table('receipts')
+                    ->whereYear('date', $cursor->year)->whereMonth('date', $cursor->month)->sum('amount');
+                $cursor->addMonth();
+            }
+        } elseif ($period === '90d') {
+            $cursor = $startDate->copy()->startOfWeek();
+            while ($cursor->lte($endDate)) {
+                $weekEnd = $cursor->copy()->endOfWeek();
+                $dailyLabels[]   = $cursor->format('d M');
+                $dailyBillings[] = (float) DB::table('billings')
+                    ->whereBetween(DB::raw('DATE(created_at)'), [$cursor->toDateString(), $weekEnd->toDateString()])->sum('amount');
+                $dailyReceipts[] = (float) DB::table('receipts')
+                    ->whereBetween('date', [$cursor->toDateString(), $weekEnd->toDateString()])->sum('amount');
+                $cursor->addWeek();
+            }
+        } else {
+            $days = (int) $startDate->diffInDays(Carbon::now());
+            for ($i = $days; $i >= 0; $i--) {
+                $date = Carbon::now()->subDays($i);
+                $dailyLabels[]   = $date->format('D d');
+                $dailyBillings[] = (float) DB::table('billings')->whereDate('created_at', $date->toDateString())->sum('amount');
+                $dailyReceipts[] = (float) DB::table('receipts')->whereDate('date', $date->toDateString())->sum('amount');
+            }
+        }
+
+        // Kept for backward compat with any view references
+        $weeklyPresents      = 0;
+        $weeklyAbsents       = 0;
+        $weeklyLeavesApplied = 0;
+        $weeklyLeavesApproved = 0;
+        $weeklyLeavesRejected = 0;
 
         return view('admin.home', compact(
+            'period',
             'totalLeaves',
             'totalWorkHours',
             'numberOfAss',
