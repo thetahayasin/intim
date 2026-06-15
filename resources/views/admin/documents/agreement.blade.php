@@ -93,9 +93,9 @@
         .services-table thead tr { background: #1a1a1a; color: #fff; }
         .services-table thead th { padding: 10px 14px; text-align: left; font-size: 13px; letter-spacing: 0.5px; font-family: Arial, sans-serif; }
         .services-table tbody td { padding: 9px 14px; border-bottom: 1px solid #ece6d8; vertical-align: top; }
-        .services-table tbody tr:nth-child(even) { background: var(--firm-table-stripe); }
+
         .svc-name { font-weight: bold; font-size: 14px; }
-        .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; }
+        .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; border: 1px solid #c8b89a; }
 
         /* Clauses */
         .clause { margin-bottom: 9px; color: #333; }
@@ -325,10 +325,19 @@
             </thead>
             <tbody>
                 @foreach($doc->services as $svc)
-                <tr>
-                    <td class="svc-name">{{ $svc['name'] }}</td>
-                    <td class="fee-cell">{{ !empty($svc['fee']) ? $svc['fee'] : '—' }}</td>
-                </tr>
+                    @php
+                        $names = $svc['names'] ?? (isset($svc['name']) ? [$svc['name']] : []);
+                        $fee   = $svc['fee'] ?? '';
+                        $cnt   = count($names);
+                    @endphp
+                    @foreach($names as $ni => $name)
+                    <tr>
+                        <td class="svc-name">{{ $name }}</td>
+                        @if($ni === 0)
+                        <td class="fee-cell"@if($cnt > 1) rowspan="{{ $cnt }}" style="vertical-align:middle;"@endif>{{ !empty($fee) ? $fee : '—' }}</td>
+                        @endif
+                    </tr>
+                    @endforeach
                 @endforeach
             </tbody>
         </table>

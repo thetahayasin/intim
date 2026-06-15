@@ -58,14 +58,15 @@ class AdminDocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_name'     => 'required|string|max:255',
-            'firm'            => 'required|in:0,1',
-            'services'        => 'required|array|min:1',
-            'services.*.name' => 'required|string|max:255',
-            'services.*.fee'  => 'nullable|string|max:255',
-            'start_date'      => 'nullable|date',
-            'end_date'        => 'nullable|date|after_or_equal:start_date',
-            'notes'           => 'nullable|string|max:2000',
+            'client_name'          => 'required|string|max:255',
+            'firm'                 => 'required|in:0,1',
+            'services'             => 'required|array|min:1',
+            'services.*.names'     => 'required|array|min:1',
+            'services.*.names.*'   => 'required|string|max:255',
+            'services.*.fee'       => 'nullable|string|max:255',
+            'start_date'           => 'nullable|date',
+            'end_date'             => 'nullable|date|after_or_equal:start_date',
+            'notes'                => 'nullable|string|max:2000',
         ]);
 
         $duplicate = Document::where('type', 'agreement')
@@ -119,14 +120,15 @@ class AdminDocumentController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'client_name'     => 'required|string|max:255',
-            'firm'            => 'required|in:0,1',
-            'services'        => 'required|array|min:1',
-            'services.*.name' => 'required|string|max:255',
-            'services.*.fee'  => 'nullable|string|max:255',
-            'start_date'      => 'nullable|date',
-            'end_date'        => 'nullable|date|after_or_equal:start_date',
-            'notes'           => 'nullable|string|max:2000',
+            'client_name'          => 'required|string|max:255',
+            'firm'                 => 'required|in:0,1',
+            'services'             => 'required|array|min:1',
+            'services.*.names'     => 'required|array|min:1',
+            'services.*.names.*'   => 'required|string|max:255',
+            'services.*.fee'       => 'nullable|string|max:255',
+            'start_date'           => 'nullable|date',
+            'end_date'             => 'nullable|date|after_or_equal:start_date',
+            'notes'                => 'nullable|string|max:2000',
         ]);
 
         $doc = Document::findOrFail($id);

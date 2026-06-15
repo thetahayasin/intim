@@ -6,84 +6,8 @@
 
 <div class="col-md-12 container-fluid">
 
-    {{-- Row 1: Donut Charts --}}
+    {{-- Row 1: Stat Cards (stacked) + Associate Status Donut --}}
     <div class="row my-4">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> 7-Day Financial Breakdown</strong>
-                </div>
-                <div class="card-body" style="height: 300px; position: relative;">
-                    <canvas id="billingChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-users fe-16 mr-1"></i> Associate Status</strong>
-                </div>
-                <div class="card-body" style="height: 300px; position: relative;">
-                    <canvas id="associateChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Row 2: Financial Table + Stat Cards --}}
-    <div class="row">
-
-        {{-- Financial Overview --}}
-        <div class="col-md-7">
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong class="card-title mb-0"><i class="fe fe-dollar-sign fe-16 mr-1"></i> Financial Overview</strong>
-                    <a href="{{ route('e.reports') }}" wire:navigate class="btn btn-sm btn-dark">
-                        <i class="fe fe-bar-chart-2 fe-12"></i> Reports
-                    </a>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table mb-0">
-                        <tbody>
-                            <tr>
-                                <td><strong>Gross Sales (Services)</strong></td>
-                                <td class="text-right"><strong>Rs. {{ number_format($totalSales) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Sales Tax Payable (Billed to Client)</strong></td>
-                                <td class="text-right text-secondary"><strong>Rs. {{ number_format($totalTaxb) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Total Invoiced Amount</strong></td>
-                                <td class="text-right"><strong>Rs. {{ number_format($totalSales + $totalTaxb) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Billing Discounts</strong></td>
-                                <td class="text-right text-danger"><strong>- Rs. {{ number_format($totalBillingDiscount ?? 0) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Total Receipts (Bank/Cash)</strong></td>
-                                <td class="text-right text-success"><strong>Rs. {{ number_format($totalReceipts) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tax Withheld by Client (On Receipt)</strong></td>
-                                <td class="text-right text-info"><strong>Rs. {{ number_format($totalTax) }}</strong></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Receipt Discounts / Bad Debts</strong></td>
-                                <td class="text-right text-danger"><strong>- Rs. {{ number_format($totalDiscount) }}</strong></td>
-                            </tr>
-                            <tr class="cds-highlight-row">
-                                <td><strong style="font-size: 1rem;">Net Receivable Balance</strong></td>
-                                <td class="text-right aa-color"><strong style="font-size: 1.15rem;">Rs. {{ number_format(($totalSales + $totalTaxb) - ($totalBillingDiscount ?? 0) - $totalDiscount - $totalReceipts - $totalTax) }}</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        {{-- Stat Cards --}}
         <div class="col-md-5">
             <div class="card mb-3">
                 <div class="card-body">
@@ -113,8 +37,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <small class="text-muted d-block mb-1">Cumulative</small>
-                            <div class="h5 mb-0 font-weight-bold">Pending Leaves</div>
+                            <small class="text-muted d-block mb-1">Pending</small>
+                            <div class="h5 mb-0 font-weight-bold">Leaves</div>
                             <div class="cds-stat-absents" style="font-size:1.75rem; font-weight:700; line-height:1; margin-top:4px;">{{ $totalLeaves }}</div>
                         </div>
                         <i class="fe fe-cloud-drizzle" style="font-size:2rem; color: var(--cds-border-strong);"></i>
@@ -122,7 +46,78 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-7">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <strong class="card-title mb-0"><i class="fe fe-users fe-16 mr-1"></i> Associate Status</strong>
+                </div>
+                <div class="card-body" style="height: 300px; position: relative;">
+                    <canvas id="associateChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    {{-- Row 2: Financial Overview (7-day) + Financial Breakdown Donut --}}
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong class="card-title mb-0"><i class="fe fe-dollar-sign fe-16 mr-1"></i> Financial Overview <small class="text-muted font-weight-normal ml-1">— Last 7 Days</small></strong>
+                    <a href="{{ route('e.reports') }}" wire:navigate class="btn btn-sm btn-dark">
+                        <i class="fe fe-bar-chart-2 fe-12"></i> Reports
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <td><strong>Gross Sales (Services)</strong></td>
+                                <td class="text-right"><strong>Rs. {{ number_format($weeklySales) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sales Tax Payable (Billed to Client)</strong></td>
+                                <td class="text-right text-secondary"><strong>Rs. {{ number_format($weeklyTaxb) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Invoiced Amount</strong></td>
+                                <td class="text-right"><strong>Rs. {{ number_format($weeklySales + $weeklyTaxb) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Billing Discounts</strong></td>
+                                <td class="text-right text-danger"><strong>- Rs. {{ number_format($weeklyBillingDiscount ?? 0) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Receipts (Bank/Cash)</strong></td>
+                                <td class="text-right text-success"><strong>Rs. {{ number_format($weeklyReceipts) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tax Withheld by Client (On Receipt)</strong></td>
+                                <td class="text-right text-info"><strong>Rs. {{ number_format($weeklyTax) }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Receipt Discounts / Bad Debts</strong></td>
+                                <td class="text-right text-danger"><strong>- Rs. {{ number_format($weeklyDiscount) }}</strong></td>
+                            </tr>
+                            <tr class="cds-highlight-row">
+                                <td><strong style="font-size: 1rem;">Net Receivable Balance</strong></td>
+                                <td class="text-right aa-color"><strong style="font-size: 1.15rem;">Rs. {{ number_format(($weeklySales + $weeklyTaxb) - ($weeklyBillingDiscount ?? 0) - $weeklyDiscount - $weeklyReceipts - $weeklyTax) }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> 7-Day Financial Breakdown</strong>
+                </div>
+                <div class="card-body" style="height: 300px; position: relative;">
+                    <canvas id="billingChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Row 3: Trend Chart + Ayat --}}

@@ -71,25 +71,22 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0"><i class="fe fe-list fe-16 mr-1"></i> Engagement Services &amp; Fees</h6>
                             <button type="button" class="btn btn-secondary btn-sm" id="addServiceRow">
-                                <i class="fe fe-plus fe-12"></i> Add Service
+                                <i class="fe fe-plus fe-12"></i> Add Row
                             </button>
                         </div>
 
                         <div id="servicesContainer">
                             @if(old('services'))
                                 @foreach(old('services') as $i => $svc)
-                                <div class="row service-row mb-2" data-index="{{ $i }}">
-                                    <div class="col-md-7">
-                                        <select class="form-control svc-picker mb-1">
-                                            @include('admin.documents._svc_options')
-                                        </select>
-                                        <input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">
-                                        <input type="hidden" name="services[{{ $i }}][name]" class="svc-hidden" value="{{ $svc['name'] ?? '' }}">
-                                        @error('services.'.$i.'.name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                                @php $preNames = isset($svc['names']) ? $svc['names'] : []; @endphp
+                                <div class="row service-row align-items-start mb-2" data-index="{{ $i }}"
+                                     data-svc="@json($preNames)"
+                                     data-fee="{{ $svc['fee'] ?? '' }}">
+                                    <div class="col-md-8" style="position:relative;">
+                                        <div class="svc-multi-wrap" style="position:relative;"></div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <input type="text" name="services[{{ $i }}][fee]" value="{{ $svc['fee'] ?? '' }}"
-                                               class="form-control" placeholder="Fee e.g. PKR 50,000">
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control svc-fee" placeholder="Fee e.g. PKR 50,000">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button>
@@ -97,16 +94,12 @@
                                 </div>
                                 @endforeach
                             @else
-                            <div class="row service-row mb-2" data-index="0">
-                                <div class="col-md-7">
-                                    <select class="form-control svc-picker mb-1">
-                                        @include('admin.documents._svc_options')
-                                    </select>
-                                    <input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">
-                                    <input type="hidden" name="services[0][name]" class="svc-hidden" value="">
+                            <div class="row service-row align-items-start mb-2" data-index="0" data-svc="@json([])" data-fee="">
+                                <div class="col-md-8" style="position:relative;">
+                                    <div class="svc-multi-wrap" style="position:relative;"></div>
                                 </div>
-                                <div class="col-md-4">
-                                    <input type="text" name="services[0][fee]" class="form-control" placeholder="Fee e.g. PKR 50,000">
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control svc-fee" placeholder="Fee e.g. PKR 50,000">
                                 </div>
                                 <div class="col-md-1">
                                     <button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button>
@@ -152,66 +145,207 @@ document.removeEventListener('livewire:navigated', initAgreementSelect2);
 document.addEventListener('livewire:navigated', initAgreementSelect2);
 initAgreementSelect2();
 
-var rowIndex = {{ old('services') ? count(old('services')) : 1 }};
+(function () {
+    var SVC_GROUPS = [
+        { label: 'Taxation Services', items: [
+            'Taxation Services', 'Income Tax Return (u/s 114)',
+            'Tax Withholding Statements (u/s 165)',
+            'Sale Tax Returns – All Provinces / Federal',
+            'Income Tax Litigation Letters (ITO 2001)',
+            'Sales Tax Litigation Letters (ST Act 1990)',
+            'Section 100C Exemption Letters',
+            'Rectification & Penalty Waiver Application',
+            'FBR / KPRA / BRA / SRB / AJ&K Representation',
+            'Tax Opinions'
+        ]},
+        { label: 'Audit & Assurance Services', items: [
+            'Audit & Assurance Services', 'Statutory Audits',
+            'Internal Audits', 'Review Engagements', 'Forensic Audits', 'Special Purpose Audits'
+        ]},
+        { label: 'Advisory & Consultancy Support', items: [
+            'Advisory & Consultancy Support', 'Book Keeping Services',
+            'Financial Modeling Services', 'NBFC Consultancy Services', 'Budgeting'
+        ]},
+        { label: 'Corporate & SECP Compliance', items: [
+            'Corporate & SECP Compliance', 'Annual Return Filing',
+            'Form A Filing', 'Form B Filing', 'Form 19 Filing', 'Company Incorporation'
+        ]}
+    ];
 
-var SVC_NAMES = Array.from(document.querySelectorAll('#servicesContainer .svc-picker option')).map(function(o){ return o.value; }).filter(function(v){ return v && v !== '__custom__'; });
-
-function svcPickerHTML(idx) {
-    var sel = document.querySelector('.svc-picker');
-    return '<select class="form-control svc-picker mb-1">' + sel.innerHTML + '</select>' +
-           '<input type="text" class="form-control svc-custom" placeholder="Type service name..." style="display:none">' +
-           '<input type="hidden" name="services[' + idx + '][name]" class="svc-hidden" value="">';
-}
-
-function initSvcRow(row, existingVal) {
-    var picker = row.querySelector('.svc-picker');
-    var custom = row.querySelector('.svc-custom');
-    var hidden = row.querySelector('.svc-hidden');
-    if (existingVal) {
-        hidden.value = existingVal;
-        if (SVC_NAMES.indexOf(existingVal) !== -1) {
-            picker.value = existingVal;
-        } else {
-            picker.value = '__custom__';
-            custom.value = existingVal;
-            custom.style.display = 'block';
-        }
+    function esc(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
-    picker.addEventListener('change', function() {
-        if (this.value === '__custom__') {
-            custom.style.display = 'block'; custom.focus(); hidden.value = custom.value;
-        } else if (this.value === '') {
-            custom.style.display = 'none'; hidden.value = '';
-        } else {
-            custom.style.display = 'none'; hidden.value = this.value;
+
+    function makePanelHTML() {
+        var h = '<div class="svc-trigger form-control d-flex align-items-center justify-content-between" style="cursor:pointer;user-select:none;min-height:38px;height:auto;">';
+        h += '<span class="svc-label text-muted">— Select services —</span>';
+        h += '<i class="fe fe-chevron-down fe-12 ml-2 flex-shrink-0"></i></div>';
+        h += '<div class="svc-panel" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:1050;background:#fff;border:1px solid #c6c6c6;max-height:280px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.12);">';
+        h += '<div style="padding:8px 12px 6px;">';
+        h += '<label style="cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:0;font-weight:400;"><input type="checkbox" class="svc-cb" value="__custom__"> <em>&#9999;&#xFE0E; Specify yourself&hellip;</em></label>';
+        h += '<input type="text" class="form-control form-control-sm svc-custom-text mt-1" placeholder="Type service name..." style="display:none;"></div>';
+        h += '<div style="border-top:1px solid #e0e0e0;"></div>';
+        SVC_GROUPS.forEach(function (g) {
+            h += '<div style="padding:6px 12px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8d8d8d;font-weight:700;margin-bottom:4px;">' + esc(g.label) + '</div>';
+            g.items.forEach(function (item) {
+                h += '<label style="cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:3px;font-weight:400;"><input type="checkbox" class="svc-cb" value="' + esc(item) + '"> ' + esc(item) + '</label>';
+            });
+            h += '</div><div style="border-top:1px solid #e0e0e0;"></div>';
+        });
+        h += '</div>';
+        return h;
+    }
+
+    function findCb(wrap, val) {
+        var cbs = wrap.querySelectorAll('.svc-cb');
+        for (var i = 0; i < cbs.length; i++) { if (cbs[i].value === val) return cbs[i]; }
+        return null;
+    }
+
+    function syncLabel(wrap) {
+        var names = [];
+        wrap.querySelectorAll('.svc-cb:checked').forEach(function (cb) {
+            if (cb.value === '__custom__') {
+                var t = wrap.querySelector('.svc-custom-text');
+                if (t && t.value.trim()) names.push(t.value.trim());
+            } else names.push(cb.value);
+        });
+        var lbl = wrap.querySelector('.svc-label');
+        if (!names.length) { lbl.textContent = '— Select services —'; lbl.className = 'svc-label text-muted'; }
+        else if (names.length === 1) { lbl.textContent = names[0]; lbl.className = 'svc-label'; }
+        else { lbl.textContent = names.length + ' services selected'; lbl.className = 'svc-label'; }
+    }
+
+    function initWrap(wrap) {
+        var trigger = wrap.querySelector('.svc-trigger');
+        var panel   = wrap.querySelector('.svc-panel');
+        var customCb   = findCb(wrap, '__custom__');
+        var customText = wrap.querySelector('.svc-custom-text');
+        trigger.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var open = panel.style.display !== 'none';
+            document.querySelectorAll('.svc-panel').forEach(function (p) { p.style.display = 'none'; });
+            panel.style.display = open ? 'none' : 'block';
+        });
+        panel.addEventListener('click', function (e) { e.stopPropagation(); });
+        if (customCb) {
+            customCb.addEventListener('change', function () {
+                customText.style.display = this.checked ? 'block' : 'none';
+                if (this.checked) customText.focus();
+                syncLabel(wrap);
+            });
         }
+        if (customText) customText.addEventListener('input', function () { syncLabel(wrap); });
+        wrap.querySelectorAll('.svc-cb:not([value="__custom__"])').forEach(function (cb) {
+            cb.addEventListener('change', function () { syncLabel(wrap); });
+        });
+    }
+
+    function initRow(row) {
+        var wrap = row.querySelector('.svc-multi-wrap');
+        if (!wrap) return;
+        wrap.innerHTML = makePanelHTML();
+        var preNames = [];
+        try { preNames = JSON.parse(row.dataset.svc || '[]'); } catch (e) {}
+        var feeVal   = row.dataset.fee || '';
+        var feeInput = row.querySelector('.svc-fee');
+        if (feeInput && feeVal) feeInput.value = feeVal;
+        preNames.forEach(function (name) {
+            if (!name) return;
+            var cb = findCb(wrap, name);
+            if (cb) { cb.checked = true; }
+            else {
+                var ccb = findCb(wrap, '__custom__');
+                var ct  = wrap.querySelector('.svc-custom-text');
+                if (ccb && ct) { ccb.checked = true; ct.value = name; ct.style.display = 'block';}
+            }
+        });
+        syncLabel(wrap);
+        initWrap(wrap);
+    }
+
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.svc-panel').forEach(function (p) { p.style.display = 'none'; });
     });
-    custom.addEventListener('input', function() { hidden.value = this.value; });
-}
 
-document.querySelectorAll('.service-row').forEach(function(row) {
-    initSvcRow(row, row.querySelector('.svc-hidden').value);
-});
+    var rowIndex = 0;
 
-document.getElementById('addServiceRow').addEventListener('click', function() {
-    var container = document.getElementById('servicesContainer');
-    var row = document.createElement('div');
-    row.className = 'row service-row mb-2';
-    row.dataset.index = rowIndex;
-    row.innerHTML =
-        '<div class="col-md-7">' + svcPickerHTML(rowIndex) + '</div>' +
-        '<div class="col-md-4"><input type="text" name="services[' + rowIndex + '][fee]" class="form-control" placeholder="Fee (optional)"></div>' +
-        '<div class="col-md-1"><button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button></div>';
-    container.appendChild(row);
-    initSvcRow(row, '');
-    rowIndex++;
-});
+    function bindSvcControls() {
+        var container = document.getElementById('servicesContainer');
+        if (!container || container.dataset.bound) return;
+        container.dataset.bound = '1';
 
-document.getElementById('servicesContainer').addEventListener('click', function(e) {
-    var btn = e.target.closest('.removeRow');
-    if (btn && document.querySelectorAll('.service-row').length > 1) {
-        btn.closest('.service-row').remove();
+        document.getElementById('addServiceRow').addEventListener('click', function () {
+            var row = document.createElement('div');
+            row.className = 'row service-row align-items-start mb-2';
+            row.dataset.index = rowIndex;
+            row.dataset.svc   = '[]';
+            row.dataset.fee   = '';
+            row.setAttribute('data-svc-init', '1');
+            row.innerHTML =
+                '<div class="col-md-8" style="position:relative;"><div class="svc-multi-wrap" style="position:relative;"></div></div>' +
+                '<div class="col-md-3"><input type="text" class="form-control svc-fee" placeholder="Fee e.g. PKR 50,000"></div>' +
+                '<div class="col-md-1"><button type="button" class="btn btn-outline-secondary btn-sm removeRow"><i class="fe fe-trash-2 fe-12"></i></button></div>';
+            container.appendChild(row);
+            initRow(row);
+            rowIndex++;
+        });
+
+        container.addEventListener('click', function (e) {
+            var btn = e.target.closest('.removeRow');
+            if (btn && document.querySelectorAll('.service-row').length > 1) btn.closest('.service-row').remove();
+        });
+
+        document.getElementById('docForm').addEventListener('submit', function (e) {
+            this.querySelectorAll('.gen-svc').forEach(function (el) { el.remove(); });
+            var form = this, si = 0, valid = true;
+            document.querySelectorAll('.service-row').forEach(function (row) {
+                var wrap = row.querySelector('.svc-multi-wrap');
+                var fee  = (row.querySelector('.svc-fee') || { value: '' }).value || '';
+                var names = [];
+                wrap.querySelectorAll('.svc-cb:checked').forEach(function (cb) {
+                    if (cb.value === '__custom__') {
+                        var t = wrap.querySelector('.svc-custom-text');
+                        if (t && t.value.trim()) names.push(t.value.trim());
+                    } else names.push(cb.value);
+                });
+                if (!names.length) {
+                    valid = false;
+                    var tr = row.querySelector('.svc-trigger');
+                    if (tr) tr.style.outline = '2px solid #dc3545';
+                    return;
+                }
+                names.forEach(function (name) {
+                    var n = document.createElement('input');
+                    n.type = 'hidden'; n.className = 'gen-svc';
+                    n.name = 'services[' + si + '][names][]'; n.value = name;
+                    form.appendChild(n);
+                });
+                var f = document.createElement('input');
+                f.type = 'hidden'; f.className = 'gen-svc';
+                f.name = 'services[' + si + '][fee]'; f.value = fee;
+                form.appendChild(f);
+                si++;
+            });
+            if (!valid) e.preventDefault();
+        });
     }
-});
+
+    function initSvcRows() {
+        if (!document.getElementById('servicesContainer')) return;
+        document.querySelectorAll('.service-row:not([data-svc-init])').forEach(function (row) {
+            row.setAttribute('data-svc-init', '1');
+            var idx = parseInt(row.dataset.index || 0);
+            if (idx >= rowIndex) rowIndex = idx + 1;
+            initRow(row);
+        });
+        bindSvcControls();
+    }
+
+    document.removeEventListener('livewire:navigated', initSvcRows);
+    document.addEventListener('livewire:navigated', initSvcRows);
+    setTimeout(initSvcRows, 0);
+    initSvcRows();
+})();
 </script>
 @endsection
