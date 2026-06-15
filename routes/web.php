@@ -11,6 +11,7 @@ use App\Http\Controllers\AssociateProgressController;
 use App\Http\Controllers\AssociateProfileController;
 //admin
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\AdminLeaveController;
 use App\Http\Controllers\AdminAssociateController;
 use App\Http\Controllers\AdminProgressController;
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
     //dashboard
     Route::get('/e/dashboard', [AdminDashboardController::class, 'index'])->name('e.dash');
     Route::get('/export-client-report', [AdminDashboardController::class, 'exportClientReport'])->name('export.client.report');
+    Route::get('/e/reports', [ReportsController::class, 'index'])->name('e.reports');
 
 
     //holidays

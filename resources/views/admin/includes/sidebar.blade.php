@@ -75,6 +75,17 @@
       </li>
     </ul>
     <p class="text-muted nav-heading mt-4 mb-1">
+      <span>Reports</span>
+    </p>
+    <ul class="navbar-nav flex-fill w-100 mb-2">
+      <li class="nav-item">
+        <a href="{{ route('e.reports') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.reports') ? 'side-select' : '' }}">
+          <i class="fe fe-bar-chart-2 fe-16"></i>
+          <span class="ml-3 item-text">Financial Reports</span>
+        </a>
+      </li>
+    </ul>
+    <p class="text-muted nav-heading mt-4 mb-1">
       <span>Documents</span>
     </p>
     <ul class="navbar-nav flex-fill w-100 mb-2">

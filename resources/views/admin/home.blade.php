@@ -4,31 +4,14 @@
 
 @section('content')
 
-@php
-    $periodLabels = ['7d' => 'Last 7 Days', '30d' => 'Last 30 Days', '90d' => 'Last 90 Days', 'month' => 'This Month', 'year' => 'This Year'];
-    $periodLabel  = $periodLabels[$period] ?? 'Last 7 Days';
-@endphp
-
 <div class="col-md-12 container-fluid">
 
-    {{-- Filter Bar --}}
-    <div class="d-flex align-items-center flex-wrap mb-4 mt-3" style="gap:6px;">
-        <span class="text-muted mr-2" style="font-size:12px;font-family:'IBM Plex Sans',sans-serif;letter-spacing:.5px;">PERIOD</span>
-        @foreach(['7d' => '7 Days', '30d' => '30 Days', '90d' => '90 Days', 'month' => 'This Month', 'year' => 'This Year'] as $key => $label)
-            <a href="{{ route('e.dash', ['period' => $key]) }}"
-               style="display:inline-block;padding:4px 14px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-decoration:none;border-radius:2px;
-                      {{ $period === $key ? 'background:#161616;color:#fff;' : 'background:#f4f4f4;color:#525252;border:1px solid #e0e0e0;' }}">
-                {{ $label }}
-            </a>
-        @endforeach
-    </div>
-
     {{-- Row 1: Donut Charts --}}
-    <div class="row my-4" style="margin-top:0!important;">
+    <div class="row my-4">
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> Financial Breakdown — {{ $periodLabel }}</strong>
+                    <strong class="card-title mb-0"><i class="fe fe-pie-chart fe-16 mr-1"></i> 7-Day Financial Breakdown</strong>
                 </div>
                 <div class="card-body" style="height: 300px; position: relative;">
                     <canvas id="billingChart"></canvas>
@@ -54,9 +37,9 @@
         <div class="col-md-7">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong class="card-title mb-0"><i class="fe fe-dollar-sign fe-16 mr-1"></i> Financial Overview — {{ $periodLabel }}</strong>
-                    <a href="{{ route('export.client.report') }}" class="btn btn-sm btn-secondary">
-                        <i class="fe fe-download fe-12"></i> Export Excel
+                    <strong class="card-title mb-0"><i class="fe fe-dollar-sign fe-16 mr-1"></i> Financial Overview</strong>
+                    <a href="{{ route('e.reports') }}" wire:navigate class="btn btn-sm btn-dark">
+                        <i class="fe fe-bar-chart-2 fe-12"></i> Reports
                     </a>
                 </div>
                 <div class="card-body p-0">
@@ -118,7 +101,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <small class="text-muted d-block mb-1">{{ $periodLabel }}</small>
+                            <small class="text-muted d-block mb-1">Cumulative</small>
                             <div class="h5 mb-0 font-weight-bold">Work Hours</div>
                             <div class="cds-stat-hours" style="font-size:1.75rem; font-weight:700; line-height:1; margin-top:4px;">{{ $totalWorkHours }}</div>
                         </div>
@@ -147,7 +130,7 @@
         <div class="col-md-8">
             <div class="card mb-4">
                 <div class="card-header">
-                    <strong class="card-title mb-0"><i class="fe fe-trending-up fe-16 mr-1"></i> Billings vs Receipts — {{ $periodLabel }}</strong>
+                    <strong class="card-title mb-0"><i class="fe fe-trending-up fe-16 mr-1"></i> Last 7 Days — Billings vs Receipts</strong>
                 </div>
                 <div class="card-body" style="height: 320px; position: relative;">
                     <canvas id="weeklyTrendChart"></canvas>
@@ -197,7 +180,7 @@
         var billing = JSON.parse(document.getElementById('dashBillingData').textContent);
         var assoc   = JSON.parse(document.getElementById('dashAssocData').textContent);
 
-        // Trend Chart
+        // 7-Day Trend
         var weeklyEl = document.getElementById('weeklyTrendChart');
         if (weeklyEl) {
             _charts.weeklyTrendChart = new Chart(weeklyEl, {
@@ -232,7 +215,7 @@
                             grid: { color: 'rgba(0,0,0,0.05)' },
                             ticks: { callback: function(v) { return 'Rs. ' + v.toLocaleString(); }, font: PLEX }
                         },
-                        x: { grid: { display: false }, ticks: { font: PLEX, maxTicksLimit: 12 } }
+                        x: { grid: { display: false }, ticks: { font: PLEX } }
                     },
                     plugins: {
                         legend: { position: 'top', labels: { font: { family: 'IBM Plex Sans', size: 13 }, usePointStyle: true, padding: 16 } },
@@ -245,9 +228,9 @@
         // Financial Doughnut
         var billingEl = document.getElementById('billingChart');
         if (billingEl) {
-            var inv = billing.invoiced, rec = billing.receipts,
-                dis = billing.discounts, tax = billing.tax,
-                out = inv - dis - rec - tax;
+            var inv  = billing.invoiced, rec = billing.receipts,
+                dis  = billing.discounts, tax = billing.tax,
+                out  = inv - dis - rec - tax;
             _charts.billingChart = new Chart(billingEl, {
                 type: 'doughnut',
                 data: {
