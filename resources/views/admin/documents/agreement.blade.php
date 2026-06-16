@@ -89,13 +89,16 @@
         .svc-card ul { margin: 0; padding-left: 18px; color: #333; font-size: 13px; line-height: 1.85; }
 
         /* Engagement services table */
-        .services-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; }
+        .services-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 14px; border: 2px solid #1a1a1a; }
         .services-table thead tr { background: #1a1a1a; color: #fff; }
         .services-table thead th { padding: 10px 14px; text-align: left; font-size: 13px; letter-spacing: 0.5px; font-family: Arial, sans-serif; }
-        .services-table tbody td { padding: 9px 14px; border-bottom: 1px solid #ece6d8; vertical-align: top; }
+        .services-table thead th:last-child { text-align: center; }
+        .services-table tbody td { padding: 9px 14px; border-bottom: 2px solid #1a1a1a; border-right: 1px solid #1a1a1a; vertical-align: top; }
+        .services-table tbody td:last-child { border-right: none; }
+        .services-table tbody tr:last-child td { border-bottom: none; }
 
         .svc-name { font-weight: bold; font-size: 14px; }
-        .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; border: 1px solid #c8b89a; }
+        .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; border-left: 2px solid #1a1a1a !important; text-align: center; }
 
         /* Clauses */
         .clause { margin-bottom: 9px; color: #333; }
@@ -319,7 +322,7 @@
         <table class="services-table">
             <thead>
                 <tr>
-                    <th style="width:65%">Service</th>
+                    <th style="width:65%">Description</th>
                     <th>Agreed Fee (PKR)</th>
                 </tr>
             </thead>

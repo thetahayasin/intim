@@ -278,8 +278,8 @@ initAgreementSelect2();
             'Tax Opinions'
         ]},
         { label: 'Audit & Assurance Services', items: [
-            'Audit & Assurance Services', 'Statutory Audits',
-            'Internal Audits', 'Review Engagements', 'Forensic Audits', 'Special Purpose Audits'
+            'Audit & Assurance Services', 'Statutory Audit',
+            'Internal Audit', 'Review Engagement', 'Forensic Audit', 'Special Purpose Audit'
         ]},
         { label: 'Advisory & Consultancy Support', items: [
             'Advisory & Consultancy Support', 'Book Keeping Services',

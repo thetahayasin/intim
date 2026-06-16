@@ -14,11 +14,11 @@
 </optgroup>
 <optgroup label="Audit &amp; Assurance Services">
     <option>Audit &amp; Assurance Services</option>
-    <option>Statutory Audits</option>
-    <option>Internal Audits</option>
-    <option>Review Engagements</option>
-    <option>Forensic Audits</option>
-    <option>Special Purpose Audits</option>
+    <option>Statutory Audit</option>
+    <option>Internal Audit</option>
+    <option>Review Engagement</option>
+    <option>Forensic Audit</option>
+    <option>Special Purpose Audit</option>
 </optgroup>
 <optgroup label="Advisory &amp; Consultancy Support">
     <option>Advisory &amp; Consultancy Support</option>
