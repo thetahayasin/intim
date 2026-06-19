@@ -36,7 +36,7 @@
         /* Page 2+ */
         .section { margin-bottom: 28px; }
         .section-title { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #f4af1a; padding-bottom: 6px; margin-bottom: 12px; }
-        .firm-intro { line-height: 1.8; color: #333; }
+        .firm-intro { line-height: 1.8; color: #333; text-align: justify; }
 
         /* Services table */
         .services-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -48,7 +48,7 @@
         .fee-cell { font-weight: 700; color: #f4af1a; white-space: nowrap; }
 
         /* Notes */
-        .notes-box { background: #fdf6e3; border-left: 3px solid #f4af1a; padding: 12px 16px; border-radius: 4px; color: #444; line-height: 1.7; }
+        .notes-box { background: #fdf6e3; border-left: 3px solid #f4af1a; padding: 12px 16px; border-radius: 4px; color: #444; line-height: 1.7; text-align: justify; }
 
         /* Footer note */
         .footer-note { text-align: center; color: #aaa; font-size: 11px; margin-top: 40px; }
@@ -146,7 +146,7 @@
 
         <div class="section">
             <div class="section-title">1. &nbsp; Services to be Provided</div>
-            <p style="margin-bottom:12px;color:#444;">
+            <p class="firm-intro" style="margin-bottom:12px;color:#444;">
                 The following professional services are offered by <strong>{{ $doc->firm_name }}</strong>.
                 Any service not specifically listed below shall be treated as additional work and quoted separately.
             </p>

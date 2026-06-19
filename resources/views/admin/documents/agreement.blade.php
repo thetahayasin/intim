@@ -101,7 +101,7 @@
         .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; border-left: 2px solid #1a1a1a !important; text-align: center; }
 
         /* Clauses */
-        .clause { margin-bottom: 9px; color: #333; }
+        .clause { margin-bottom: 9px; color: #333; text-align: justify; }
 
         /* Signatures */
         .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; margin-top: 28px; }
@@ -110,9 +110,12 @@
         .sig-role { color: #555; font-style: italic; font-size: 13px; }
         .sig-org { font-weight: bold; font-size: 14px; }
         .sig-date { color: #555; font-size: 13px; margin-top: 10px; }
-        .sig-date-line { display: inline-block; border-bottom: 1px solid #333; width: 160px; }
+        .sig-line-container { height: 80px; margin-bottom: 12px; border-bottom: 1px solid #333; display: flex; align-items: flex-end; padding-bottom: 6px; width: 260px; }
+        .sig-field { display: flex; align-items: flex-end; width: 260px; }
+        .sig-field-label { margin-right: 8px; white-space: nowrap; }
+        .sig-field-line { flex-grow: 1; border-bottom: 1px solid #333; }
 
-        .notes-box { background: var(--firm-tint-bg); border-left: 4px solid var(--firm-accent); padding: 12px 18px; border-radius: 4px; color: #444; }
+        .notes-box { background: var(--firm-tint-bg); border-left: 4px solid var(--firm-accent); padding: 12px 18px; border-radius: 4px; color: #444; text-align: justify; }
 
         @media print {
             body { background: white !important; }
@@ -395,7 +398,7 @@
     <div class="sig-grid">
         <div>
             <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
-            <div style="height:80px;margin-bottom:12px;border-bottom:1px solid #333;display:flex;align-items:flex-end;padding-bottom:6px;">
+            <div class="sig-line-container">
                 @if($doc->firm == 0)
                     <img src="{{ asset('assets/img/sig-asif.jpg') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
                 @else
@@ -404,15 +407,27 @@
             </div>
             <div class="sig-name">Muhammad Asif Raza (FCA)</div>
             <div class="sig-role">Partner</div>
-            <div class="sig-date" style="margin-top:16px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+            <div class="sig-date sig-field" style="margin-top:16px;">
+                <span class="sig-field-label">Date:</span>
+                <span class="sig-field-line"></span>
+            </div>
         </div>
 
         <div>
             <div class="sig-label">F O R &nbsp; T H E &nbsp; C L I E N T</div>
-            <div style="height:80px;border-bottom:1px solid #333;margin-bottom:12px;"></div>
-            <div class="sig-name">Name: &nbsp;<span class="sig-date-line" style="width:180px;"></span></div>
-            <div class="sig-role" style="margin-top:8px;">Designation: &nbsp;<span class="sig-date-line" style="width:140px;"></span></div>
-            <div class="sig-date" style="margin-top:10px;">Date: &nbsp;<span class="sig-date-line"></span></div>
+            <div class="sig-line-container"></div>
+            <div class="sig-name sig-field" style="margin-top:12px;">
+                <span class="sig-field-label">Name:</span>
+                <span class="sig-field-line"></span>
+            </div>
+            <div class="sig-role sig-field" style="margin-top:12px;">
+                <span class="sig-field-label">Designation:</span>
+                <span class="sig-field-line"></span>
+            </div>
+            <div class="sig-date sig-field" style="margin-top:12px;">
+                <span class="sig-field-label">Date:</span>
+                <span class="sig-field-line"></span>
+            </div>
         </div>
     </div>
 

@@ -79,6 +79,12 @@
           <span class="ml-3 item-text">Receipts</span>
         </a>
       </li>
+      <li class="nav-item dropdown">
+        <a href="{{ route('e.duplicates') }}" wire:navigate class="nav-link {{ Route::currentRouteNamed('e.duplicates') ? 'side-select' : '' }}">
+          <i class="fe fe-copy fe-16"></i>
+          <span class="ml-3 item-text">Dedup Clients <span class="cds-tag" style="background:#da1e28;">Temp</span></span>
+        </a>
+      </li>
     </ul>
     <p class="text-muted nav-heading mt-4 mb-1">
       <span>Documents</span>
