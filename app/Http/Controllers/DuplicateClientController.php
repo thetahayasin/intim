@@ -51,7 +51,7 @@ Return ONLY a valid JSON array of arrays of client IDs representing the duplicat
         }
 
         try {
-            $response = Http::withoutVerifying()->timeout(60)->post(
+            $response = Http::withoutVerifying()->timeout(0)->post(
                 "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}",
                 [
                     'contents' => [
