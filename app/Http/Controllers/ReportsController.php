@@ -24,10 +24,7 @@ class ReportsController extends Controller
         } else {
             switch ($period) {
                 case 'all':
-                    $earliestBilling = DB::table('billings')->min('created_at');
-                    $earliestReceipt = DB::table('receipts')->min('date');
-                    $earliestDate = collect([$earliestBilling, $earliestReceipt])->filter()->min();
-                    $startDate = $earliestDate ? Carbon::parse($earliestDate)->startOfDay() : Carbon::now()->subYears(20)->startOfDay();
+                    $startDate = Carbon::create(2025, 1, 1)->startOfDay();
                     break;
                 case '30d':
                     $startDate = Carbon::now()->subDays(29)->startOfDay();
