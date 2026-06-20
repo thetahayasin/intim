@@ -5,7 +5,7 @@
 @section('content')
 
 @php
-    $quickPeriods = ['7d' => '7 Days', '30d' => '30 Days', '90d' => '90 Days', 'month' => 'This Month', 'year' => 'This Year'];
+    $quickPeriods = ['7d' => '7 Days', '30d' => '30 Days', '90d' => '90 Days', 'month' => 'This Month', 'year' => 'This Year', 'all' => 'All Time'];
     $periodLabel  = $period === 'custom'
         ? $startDate->format('d M Y') . ' – ' . $endDate->format('d M Y')
         : ($quickPeriods[$period] ?? '7 Days');

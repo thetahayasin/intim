@@ -23,6 +23,12 @@ class ReportsController extends Controller
             $endDate   = Carbon::parse($to)->endOfDay();
         } else {
             switch ($period) {
+                case 'all':
+                    $earliestBilling = DB::table('billings')->min('created_at');
+                    $earliestReceipt = DB::table('receipts')->min('date');
+                    $earliestDate = collect([$earliestBilling, $earliestReceipt])->filter()->min();
+                    $startDate = $earliestDate ? Carbon::parse($earliestDate)->startOfDay() : Carbon::now()->subYears(20)->startOfDay();
+                    break;
                 case '30d':
                     $startDate = Carbon::now()->subDays(29)->startOfDay();
                     break;
@@ -106,7 +112,7 @@ class ReportsController extends Controller
         if ($request->input('export')) {
             $periodLabel = $period === 'custom'
                 ? $startDate->format('d M Y') . ' to ' . $endDate->format('d M Y')
-                : ['7d' => 'Last 7 Days', '30d' => 'Last 30 Days', '90d' => 'Last 90 Days', 'month' => 'This Month', 'year' => 'This Year'][$period] ?? 'Report';
+                : ['7d' => 'Last 7 Days', '30d' => 'Last 30 Days', '90d' => 'Last 90 Days', 'month' => 'This Month', 'year' => 'This Year', 'all' => 'All Time'][$period] ?? 'Report';
             $filename = 'financial-report-' . $startDate->format('Y-m-d') . '-to-' . $endDate->format('Y-m-d') . '.xlsx';
             return Excel::download(new ReportsExport($startDate, $endDate, $periodLabel), $filename);
         }
