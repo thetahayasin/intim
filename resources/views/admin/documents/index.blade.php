@@ -98,6 +98,7 @@
                         <th>Client</th>
                         <th>Firm</th>
                         <th>Period</th>
+                        <th>Status</th>
                         <th>Signed</th>
                         <th>Actions</th>
                     </tr>
@@ -113,6 +114,13 @@
                                 <small>{{ $doc->start_date->format('d M Y') }} – {{ $doc->end_date->format('d M Y') }}</small>
                             @else
                                 <small class="text-muted">—</small>
+                            @endif
+                        </td>
+                        <td>
+                            @if($doc->status === 'final')
+                                <span class="cds-status-tag cds-status-tag--done" title="Finalised">Final</span>
+                            @else
+                                <span class="cds-status-tag" title="Draft">Draft</span>
                             @endif
                         </td>
                         <td>
@@ -179,7 +187,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" class="text-center text-muted py-4">No documents found.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">No documents found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

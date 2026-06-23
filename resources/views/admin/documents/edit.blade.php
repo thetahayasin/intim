@@ -13,8 +13,13 @@
         {{-- Left: Agreement Details --}}
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">
-                    <strong class="card-title"><i class="fe fe-edit-2 fe-16 mr-1"></i> Edit Agreement — {{ $doc->client_name }}</strong>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong class="card-title mb-0"><i class="fe fe-edit-2 fe-16 mr-1"></i> Edit Agreement — {{ $doc->client_name }}</strong>
+                    @if($doc->status === 'final')
+                        <span class="cds-status-tag cds-status-tag--done">Final</span>
+                    @else
+                        <span class="cds-status-tag">Draft</span>
+                    @endif
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -125,8 +130,11 @@
                             <a href="{{ route('e.documents.view', $doc->id) }}" target="_blank" class="btn btn-outline-secondary mr-2">
                                 <i class="fe fe-printer fe-16"></i> Preview
                             </a>
-                            <button type="submit" class="btn btn-secondary btn-lg">
-                                <i class="fe fe-save fe-16"></i> Save Changes
+                            <button type="submit" name="status" value="draft" class="btn btn-outline-secondary btn-lg mr-2">
+                                <i class="fe fe-edit-3 fe-16"></i> Save as Draft
+                            </button>
+                            <button type="submit" name="status" value="final" class="btn btn-secondary btn-lg">
+                                <i class="fe fe-check-circle fe-16"></i> Save as Final
                             </button>
                         </div>
                     </form>

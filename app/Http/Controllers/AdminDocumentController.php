@@ -67,6 +67,7 @@ class AdminDocumentController extends Controller
             'start_date'           => 'nullable|date',
             'end_date'             => 'nullable|date|after_or_equal:start_date',
             'notes'                => 'nullable|string|max:2000',
+            'status'               => 'nullable|in:draft,final',
         ]);
 
         $duplicate = Document::where('type', 'agreement')
@@ -83,6 +84,8 @@ class AdminDocumentController extends Controller
 
         $client = Client::where('name', $request->client_name)->first();
 
+        $status = $request->status === 'final' ? 'final' : 'draft';
+
         Document::create([
             'type'        => 'agreement',
             'client_id'   => $client?->id,
@@ -92,9 +95,11 @@ class AdminDocumentController extends Controller
             'start_date'  => $request->start_date,
             'end_date'    => $request->end_date,
             'notes'       => $request->notes,
+            'status'      => $status,
         ]);
 
-        return redirect()->route('e.documents')->with('success', 'Agreement created successfully.');
+        $label = $status === 'final' ? 'finalised' : 'saved as draft';
+        return redirect()->route('e.documents')->with('success', "Agreement {$label} successfully.");
     }
 
     public function view($id)
@@ -129,6 +134,7 @@ class AdminDocumentController extends Controller
             'start_date'           => 'nullable|date',
             'end_date'             => 'nullable|date|after_or_equal:start_date',
             'notes'                => 'nullable|string|max:2000',
+            'status'               => 'nullable|in:draft,final',
         ]);
 
         $doc = Document::findOrFail($id);
@@ -148,6 +154,8 @@ class AdminDocumentController extends Controller
 
         $client = Client::where('name', $request->client_name)->first();
 
+        $status = $request->status === 'final' ? 'final' : 'draft';
+
         $doc->update([
             'client_id'   => $client?->id,
             'client_name' => $request->client_name,
@@ -156,9 +164,11 @@ class AdminDocumentController extends Controller
             'start_date'  => $request->start_date,
             'end_date'    => $request->end_date,
             'notes'       => $request->notes,
+            'status'      => $status,
         ]);
 
-        return redirect()->route('e.documents.edit', $id)->with('success', 'Agreement updated successfully.');
+        $label = $status === 'final' ? 'finalised' : 'saved as draft';
+        return redirect()->route('e.documents.edit', $id)->with('success', "Agreement {$label} successfully.");
     }
 
     public function destroy($id)

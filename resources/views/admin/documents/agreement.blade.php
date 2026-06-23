@@ -45,6 +45,28 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* DRAFT watermark (only rendered while status = draft) */
+        .draft-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-32deg);
+            font-family: Arial, sans-serif;
+            font-size: 150px;
+            font-weight: bold;
+            letter-spacing: 18px;
+            text-transform: uppercase;
+            color: rgba(220, 53, 69, 0.13);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            z-index: 5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         /* Cover page */
@@ -139,6 +161,11 @@
 <div class="no-print doc-toolbar" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#161616;border-bottom:1px solid #393939;">
     <span class="doc-toolbar-title" style="font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;color:#8d8d8d;letter-spacing:0.5px;">
         {{ $doc->client_name }} &nbsp;—&nbsp; {{ $doc->created_at->format('d M Y') }}
+        @if($doc->status === 'draft')
+            <span style="margin-left:10px;padding:2px 10px;background:#dc3545;color:#fff;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;">Draft</span>
+        @else
+            <span style="margin-left:10px;padding:2px 10px;background:#198754;color:#fff;font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;">Final</span>
+        @endif
     </span>
     <div class="doc-toolbar-actions" style="display:flex;gap:8px;">
         <button onclick="window.print()" style="background:#f4f4f4;color:#161616;border:none;padding:7px 18px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',Arial,sans-serif;font-size:13px;">
@@ -155,6 +182,7 @@
 
 {{-- ===================== PAGE 1: COVER ===================== --}}
 <div class="doc-page">
+    @if($doc->status === 'draft')<div class="draft-watermark">Draft</div>@endif
 
     <div class="top-bar">
         TAXATION <span>•</span> SALES TAX <span>•</span> AUDIT <span>•</span> CORPORATE (SECP)
@@ -195,6 +223,7 @@
 
 {{-- ===================== PAGE 2: THE FIRM + SERVICES ===================== --}}
 <div class="doc-page">
+    @if($doc->status === 'draft')<div class="draft-watermark">Draft</div>@endif
 
     <div class="inner-header">
         <span>Professional Services Agreement</span>
@@ -302,6 +331,7 @@
 
 {{-- ===================== PAGE 3: ENGAGEMENT AGREEMENT ===================== --}}
 <div class="doc-page">
+    @if($doc->status === 'draft')<div class="draft-watermark">Draft</div>@endif
 
     <div class="inner-header">
         <span>Professional Services Agreement</span>
@@ -375,6 +405,7 @@
 
 {{-- ===================== PAGE 4: ACCEPTANCE ===================== --}}
 <div class="doc-page">
+    @if($doc->status === 'draft')<div class="draft-watermark">Draft</div>@endif
 
     <div class="inner-header">
         <span>Professional Services Agreement</span>
@@ -399,10 +430,12 @@
         <div>
             <div class="sig-label">F O R &nbsp; T H E &nbsp; F I R M</div>
             <div class="sig-line-container">
-                @if($doc->firm == 0)
-                    <img src="{{ asset('assets/img/sig-asif.jpg') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
-                @else
-                    <img src="{{ asset('assets/img/sig-hamd.png') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
+                @if($doc->status === 'final')
+                    @if($doc->firm == 0)
+                        <img src="{{ asset('assets/img/sig-asif.jpg') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
+                    @else
+                        <img src="{{ asset('assets/img/sig-hamd.png') }}" alt="Signature" style="max-height:64px;max-width:220px;object-fit:contain;">
+                    @endif
                 @endif
             </div>
             <div class="sig-name">Muhammad Asif Raza (FCA)</div>

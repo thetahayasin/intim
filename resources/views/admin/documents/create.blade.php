@@ -116,8 +116,11 @@
                         </div>
 
                         <div class="text-right">
-                            <button type="submit" class="btn btn-secondary btn-lg">
-                                <i class="fe fe-save fe-16"></i> Generate Agreement
+                            <button type="submit" name="status" value="draft" class="btn btn-outline-secondary btn-lg mr-2">
+                                <i class="fe fe-edit-3 fe-16"></i> Save as Draft
+                            </button>
+                            <button type="submit" name="status" value="final" class="btn btn-secondary btn-lg">
+                                <i class="fe fe-check-circle fe-16"></i> Save as Final
                             </button>
                         </div>
                     </form>
