@@ -29,8 +29,6 @@ use App\Http\Controllers\AdminResourceController;
 use App\Http\Controllers\AssociateResourceController;
 //documents
 use App\Http\Controllers\AdminDocumentController;
-//duplicates (temp)
-use App\Http\Controllers\DuplicateClientController;
 
 
 
@@ -167,11 +165,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'uploadSignedPdf'])->name('e.documents.signed-pdf.upload');
     Route::get('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'downloadSignedPdf'])->name('e.documents.signed-pdf');
     Route::delete('/e/documents/{id}/signed-pdf', [AdminDocumentController::class, 'destroySignedPdf'])->name('e.documents.signed-pdf.destroy');
-
-    // Duplicate Client Scanner (temp)
-    Route::get('/e/duplicates', [DuplicateClientController::class, 'index'])->name('e.duplicates');
-    Route::get('/e/duplicates/scan', [DuplicateClientController::class, 'scan'])->name('e.duplicates.scan');
-    Route::post('/e/duplicates/merge', [DuplicateClientController::class, 'merge'])->name('e.duplicates.merge');
 
 
 
