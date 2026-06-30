@@ -276,6 +276,7 @@ initAgreementSelect2();
     var SVC_GROUPS = [
         { label: 'Taxation Services', items: [
             'Taxation Services', 'Income Tax Return (u/s 114)',
+            'Preparation and submission of estimate for quarterly advance tax u/s 147',
             'Tax Withholding Statements (u/s 165)',
             'Sale Tax Returns – All Provinces / Federal',
             'Income Tax Litigation Letters (ITO 2001)',
@@ -302,12 +303,12 @@ initAgreementSelect2();
     function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     function makePanelHTML() {
-        var h = '<div class="svc-trigger form-control d-flex align-items-center justify-content-between" style="cursor:pointer;user-select:none;min-height:38px;height:auto;">';
-        h += '<span class="svc-label text-muted">— Select services —</span>';
+        var h = '<div class="svc-trigger form-control d-flex align-items-center justify-content-between" style="cursor:pointer;user-select:none;min-height:38px;height:auto;overflow:hidden;">';
+        h += '<span class="svc-label text-muted" style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">— Select services —</span>';
         h += '<i class="fe fe-chevron-down fe-12 ml-2 flex-shrink-0"></i></div>';
         h += '<div class="svc-panel" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:1050;background:#fff;border:1px solid #c6c6c6;max-height:280px;overflow-y:auto;box-shadow:0 4px 12px rgba(0,0,0,.12);">';
         h += '<div style="padding:8px 12px 6px;"><label style="cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:0;font-weight:400;"><input type="checkbox" class="svc-cb" value="__custom__"> <em>&#9999;&#xFE0E; Specify yourself&hellip;</em></label>';
-        h += '<input type="text" class="form-control form-control-sm svc-custom-text mt-1" placeholder="Type service name..." style="display:none;"></div>';
+        h += '<textarea rows="2" maxlength="1000" class="form-control form-control-sm svc-custom-text mt-1" placeholder="Type service name... (Shift+Enter for a new line)" style="display:none;resize:vertical;"></textarea></div>';
         h += '<div style="border-top:1px solid #e0e0e0;"></div>';
         SVC_GROUPS.forEach(function (g) {
             h += '<div style="padding:6px 12px;"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:#8d8d8d;font-weight:700;margin-bottom:4px;">' + esc(g.label) + '</div>';

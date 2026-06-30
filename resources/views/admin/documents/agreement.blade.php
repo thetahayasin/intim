@@ -119,7 +119,7 @@
         .services-table tbody td:last-child { border-right: none; }
         .services-table tbody tr:last-child td { border-bottom: none; }
 
-        .svc-name { font-weight: bold; font-size: 14px; }
+        .svc-name { font-weight: bold; font-size: 14px; white-space: pre-line; }
         .fee-cell { font-weight: bold; color: var(--firm-accent-text); white-space: nowrap; font-size: 14px; border-left: 2px solid #1a1a1a !important; text-align: center; }
 
         /* Clauses */
